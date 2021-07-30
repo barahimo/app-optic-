@@ -77,3 +77,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/application', 'HomeController@application')->name('app.home');
 // ->middleware('Auth');
 
+
+
+
+// ########################################################
+Route::get('/commandes', 'CommandeController@index2')->name('commande.index2');
+Route::get('/chargerProducts','CommandeController@chargerProducts');
+Route::get('/productsCategory','CommandeController@productsCategory');
+Route::get('/infosProducts','CommandeController@infosProducts');

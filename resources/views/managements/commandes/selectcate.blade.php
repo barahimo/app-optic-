@@ -10,25 +10,25 @@
 <body>
     
              
-    <div class="col">
-        <span>Product Category: </span>
-<select style="width: 200px" class="productcategory" id="prod_cat_id">
+<div class="col">
+	<span>Product Category: </span>
+	<select style="width: 200px" class="productcategory" id="prod_cat_id">
 
-<option value="0" disabled="true" selected="true">-Select-</option>
-@foreach($prod as $cat)
-<option value="{{$cat->id}}">{{$cat->nom_categorie}}</option>
-@endforeach
+	<option value="0" disabled="true" selected="true">-Select-</option>
+	@foreach($prod as $cat)
+	<option value="{{$cat->id}}">{{$cat->nom_categorie}}</option>
+	@endforeach
 
-</select>
+	</select>
 
-<span>Product Name: </span>
-<select style="width: 200px" class="productname">
+	<span>Product Name: </span>
+	<select style="width: 200px" class="productname">
 
-<option value="0" disabled="true" selected="true">Product Name</option>
-</select>
+	<option value="0" disabled="true" selected="true">Product Name</option>
+	</select>
 
-<span>Product Price: </span>
-<input type="text" class="prod_price">
+	<span>Product Price: </span>
+	<input type="text" class="prod_price">
 
 </div>
 

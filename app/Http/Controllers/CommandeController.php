@@ -48,7 +48,6 @@ class CommandeController extends Controller
         return response()->json($produit);
     }
    
-   
     public function index(Request $request)
     {
         $lastOne = DB::table('commandes')->latest('id')->first();
@@ -76,7 +75,6 @@ class CommandeController extends Controller
     
         
         return view('managements.commandes.index', [
-
             'prod' => $prod,
             'clients' =>client::all(),
             'produits' => Produit::all(),
@@ -90,6 +88,7 @@ class CommandeController extends Controller
         ]);
     
     }
+
     public function affiche(){  //index commande
 
         $commandes = Commande::orderBy('id', 'desc')->paginate(3);
@@ -487,5 +486,33 @@ class CommandeController extends Controller
             "status" => "la facture a été bien enregistré !!"
         ]); 
     }
+
+    // ########################################################################
+    public function index2(Request $request)
+    {
+        $date = Carbon::now();
+        $categories=Categorie::all();//get data from table
+        $clients = Client::all();
+        return view('managements.commandes.index2', [
+            'clients' =>$clients,
+            'categories' => $categories,
+            'date' => $date,
+        ]);
+    }
+
+    public function chargerProducts(Request $request){
+        $data=Produit::select('nom_produit','id')->get();
+        return response()->json($data);
+	}
+
+    public function productsCategory(Request $request){
+        $data=Produit::select('id','nom_produit','prix_produit_HT')->where('categorie_id',$request->id)->get();
+        return response()->json($data);
+	}
+
+    public function infosProducts(Request $request){
+        $data=Produit::find($request->id);
+        return response()->json($data);
+	}
     
 }

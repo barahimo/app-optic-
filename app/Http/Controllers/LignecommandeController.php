@@ -56,8 +56,8 @@ class LignecommandeController extends Controller
             'categories' => Categorie::all(),
             'lastOne' =>  $lastOne, 
             'lignecommandes' =>  $lignecommandes,
-             'priceTotal'  => $priceTotal,
-             'commande' => $commande
+            'priceTotal'  => $priceTotal,
+            'commande' => $commande
         ]);
     
 

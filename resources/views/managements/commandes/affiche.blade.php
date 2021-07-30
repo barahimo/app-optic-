@@ -7,13 +7,11 @@
         <div class="row">
             <div class="col-md-3">
                 <h4>Panneau Commandes</h4>
-                
-
             </div>
             @if(session()->has('status'))
             <script>
                 Swal.fire('{{ session('status')}}')
-              </script>
+            </script>
 
             @endif
 

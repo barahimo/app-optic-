@@ -198,10 +198,16 @@
                         <span>Clients</span>
                      </a>
                 </li>
-                               <li>   
+                <li>   
                     <a href="{{ route('commande.index')}}">
                         <span ><i class="fab fa-shopify"></i></span>
                         <span>Commandes</span>
+                     </a>
+                </li>
+                <li>   
+                    <a href="{{ route('commande.index2')}}">
+                        <span ><i class="fab fa-shopify"></i></span>
+                        <span>Commandes2</span>
                      </a>
                 </li>
                 <li>   
