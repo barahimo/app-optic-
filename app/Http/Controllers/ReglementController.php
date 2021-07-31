@@ -22,7 +22,8 @@ class ReglementController extends Controller
         // $clients = Commande::where('id', '=', $reglements->$commande_id);
         
         // dd($clients);     
-        return view('managements.réglements.index', compact('reglements','nom_client'));
+        // return view('managements.réglements.index', compact('reglements','nom_client'));
+        return view('managements.réglements.index', compact('reglements'));
     }
 
     public function search(Request $request){

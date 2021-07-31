@@ -8,7 +8,8 @@
     <div class="card-body">
       <h4 class="card-title">Ajout d'un nouveau commande :</h4>
       <div class="card-text">
-        <!-- <form> -->
+        <!-- <form id="commandeForm"> -->
+            <!-- @csrf -->
             <div class="form-row">
               <div class="col-3">
                 <input type="date" 
@@ -32,6 +33,7 @@
                 <input type="text" class="form-control" name="oeil_droite" id="droite" placeholder="oeil_droite">
               </div>
             </div>
+            <button type="submit" class="btn btn-success">Submit</button>
         <!-- </form> -->
       </div>
     </div>
@@ -84,7 +86,7 @@
           </div>
           <div class="col-3">
             <label for="total">Total :</label>
-            <input type="text" class="form-control" name="total" id="total" value="0" disabled>
+            <input type="text" class="form-control" name="total" id="total" value="0.00" disabled>
           </div>
         </div>
         <br>
@@ -120,7 +122,7 @@
               <th></th>
               <th></th>
               <th>Total a payer</th>
-              <th id="somme">0</th>
+              <th id="somme">0.00</th>
             </tr>
           </tfoot>
         </table>
@@ -188,7 +190,7 @@
       var NQte = parseInt(qte);
       var NPrix = parseFloat(prix);
       var NTotal = NQte * NPrix;
-      total.val(NTotal) ;
+      total.val(NTotal.toFixed(2)) ;
     });
     // -----------End Change Qte--------------//
     // -----------Begin AddLigne--------------//
@@ -213,7 +215,7 @@
                     <td>${qte.val()}</td>
                     <td>${total.val()}</td>
                     <td>
-                      <button class="btn btn-success" onclick="edit(event)"><i class="fas fa-edit"></i></button>
+                      <button class="btn btn-success" onclick="edit(event,${prod_id.val()})"><i class="fas fa-edit"></i></button>
                       &nbsp;&nbsp;&nbsp;
                       <button class="btn btn-danger" onclick="remove(event,${prod_id.val()})"><i class="fas fa-trash"></i></button>
                     </td>
@@ -256,29 +258,105 @@
     });
     // -----------End UpdateLigne--------------//
     // -----------Begin valider--------------//
-    $(document).on('click','#valider',function(){
+    $(document).on('click','#valider',function(e){
+      // e.preventDefault();
+      // var array  = [];
+      // array = [...array,{id:1,nom:"nom1",prenom:"prenom1"}]
+      // console.log($('input[name=_token]').val());
+      // console.log('test submit');
+      // {id:1,nom:"nom1",prenom:"prenom1"},
+      // {id:2,nom:"nom2",prenom:"prenom2"},
+      // {id:3,nom:"nom3",prenom:"prenom3"},
+      
       var date=$('#date');
       var client=$('#client');
       var gauche=$('#gauche');
       var droite=$('#droite');
+      var _token=$('input[name=_token]');
+
+      var table=$('#lignes');
+      var list = table.find('tbody').find('tr');
+      var array = [];
+      for (let i = 0; i < list.length; i++) {
+        var prod_id = list.eq(i).find('td').eq(0).html();
+        var libelle = list.eq(i).find('td').eq(1).html();
+        var prix = list.eq(i).find('td').eq(2).html();
+        var qte = list.eq(i).find('td').eq(3).html();
+        var total = list.eq(i).find('td').eq(4).html();
+        var obj = {
+              "prod_id":parseInt(prod_id),
+              "libelle":libelle,
+              "prix":prix,
+              "qte":qte,
+              "total":parseFloat(total)
+            };
+
+        array = [...array,obj];
+      }
+      $.ajax({
+        type:'post',
+        url:'{!!URL::to('store2')!!}',
+        data:{
+          date : date.val(),
+          client : parseInt(client.val()),
+          gauche : parseFloat(gauche.val()),
+          droite : parseFloat(droite.val()),
+          _token : _token.val(),
+          lignes : array,
+        },
+        // dataType: 'json',                   
+        success: function(data){
+          // console.log(data);
+          // ************** //
+
+          Swal.fire(data);
+          // ************** //
+        } ,
+        error:function(err){
+          if(err.status === 500){
+            Swal.fire(err.statusText);
+          }
+          else{
+            Swal.fire("Erreur d'enregistrement de la commande !");
+          }
+        },
+      });
+    });
+    // -----------Begin commandeForm--------------//
+    $(document).on('submit','#commandeForm',function(e){
+      e.preventDefault();
+      // console.log($('input[name=_token]').val());
+      // console.log('test submit');
+      var date=$('#date');
+      var client=$('#client');
+      var gauche=$('#gauche');
+      var droite=$('#droite');
+      var _token=$('input[name=_token]');
       console.log(date.val());
       console.log(client.val());
       console.log(gauche.val());
       console.log(droite.val());
       $.ajax({                    
-        url: 'content/get.php',     
-        type: 'post', // performing a POST request
-        data : {
-          data1 : 'value' // will be accessible in $_POST['data1']
+        type:'post',
+        url:'{!!URL::to('store2')!!}',
+        data:{
+          date : date.val(),
+          client : parseInt(client.val()),
+          gauche : parseFloat(gauche.val()),
+          droite : parseFloat(droite.val()),
+          _token : _token.val(),
         },
         dataType: 'json',                   
         success: function(data)         
         {
-        // etc...
+          console.log(data);
+        },
+        error:function(){
+          console.log("err");
         } 
-});
+      });
     });
-    // -----------End valider--------------//
+    // -----------End commandeForm--------------//
   });
   // -----------My function--------------//
   function remove(e,id){
@@ -287,14 +365,18 @@
     var i = checkIndex(id);
     var table=$('#lignes');
     var list = table.find('tbody').find('tr'); 
-    var i = checkIndex(id);
     list.eq(i).remove();
     var somme=$('#somme');
     somme.html(calculSomme());
   }
-  function edit(e){
-    var parent = $(e.target).parent().parent();
-    var list = parent.find('td');
+  function edit(e,id){
+    // var parent = $(e.target).parent().parent();
+    // var list = parent.find('td');
+
+    var i = checkIndex(id);
+    var table=$('#lignes');
+    var list = table.find('tbody').find('tr'); 
+    var td = list.eq(i).find('td');
 
     var prod_id = $('#prod_id');
     var libelle = $('#libelle');
@@ -302,11 +384,11 @@
     var qte = $('#qte');
     var total = $('#total');
 
-    var vProd_id = list.eq(0).html();
-    var vLibelle = list.eq(1).html();
-    var vPrix = list.eq(2).html();
-    var vQte = list.eq(3).html();
-    var vTotal = list.eq(4).html();
+    var vProd_id = td.eq(0).html();
+    var vLibelle = td.eq(1).html();
+    var vPrix = td.eq(2).html();
+    var vQte = td.eq(3).html();
+    var vTotal = td.eq(4).html();
 
     prod_id.val(vProd_id);
     libelle.val(vLibelle);
@@ -345,13 +427,13 @@
   function calculSomme(){
     var table=$('#lignes');
     var list = table.find('tbody').find('tr'); 
-    var somme = 0;
+    var somme = 0.0;
     for (let i = 0; i < list.length; i++) {
       var total = list.eq(i).find('td').eq(4).html();
       var NTotal = parseFloat(total);
       somme+=NTotal;
     }
-    return somme;
+    return somme.toFixed(2);
   }
   function incQte(qteNew,id){
     var table=$('#lignes');

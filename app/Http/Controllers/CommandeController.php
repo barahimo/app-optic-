@@ -514,5 +514,55 @@ class CommandeController extends Controller
         $data=Produit::find($request->id);
         return response()->json($data);
 	}
+
+    public function store2(Request $request){ 
+        $lignes = $request->input('lignes');
+        if(!empty($lignes)){
+            $date = $request->input('date');
+            $client = $request->input('client');
+            $gauche = $request->input('gauche');
+            $droite = $request->input('droite');
+            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite)){
+                // ------------ Begin Commande -------- //
+                $commande = new Commande();
+                $commande->date = $date;
+                $commande->client_id = $client;
+                $commande->nom_client = Client::find($client)->nom_client;
+                $commande->oeil_gauche = $gauche;
+                $commande->oeil_droite = $droite;
+                $commande->cadre = "";
+                $commande->mesure_vue = 0;
+                $commande->mesure_visage = 0;
+                $commande->totale = 0;
+                $commande->save();
+                // ------------ End Commande -------- //
+                // ------------ Begin LigneCommande -------- //
+                if($commande->id){
+                    foreach ($lignes as $ligne) {
+                        $lignecommande = new Lignecommande();
+                        $lignecommande->commande_id = $commande->id;
+                        $lignecommande->produit_id = $ligne['prod_id'];
+                        $lignecommande->nom_produit = $ligne['libelle'];
+                        $lignecommande->Qantite = $ligne['qte'];
+                        $lignecommande->totale_produit = $ligne['total'];
+                        $lignecommande->save();
+                    }
+                }
+                else{
+                    return "Problème d'enregistrement de la commande !";
+                }
+                // ------------ End LigneCommande -------- //
+            } 
+            else{
+                return "Veuillez remplir les champs vides !";
+            }
+        }
+        else {
+            return "Veuillez d'ajouter des lignes des commandes !";
+        }
+    
+        // return response()->json($commande);
+        return "La commande a été bien enregistrée !!";
+    }
     
 }

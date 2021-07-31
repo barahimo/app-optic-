@@ -85,3 +85,4 @@ Route::get('/commandes', 'CommandeController@index2')->name('commande.index2');
 Route::get('/chargerProducts','CommandeController@chargerProducts');
 Route::get('/productsCategory','CommandeController@productsCategory');
 Route::get('/infosProducts','CommandeController@infosProducts');
+Route::post('/store2','CommandeController@store2');
