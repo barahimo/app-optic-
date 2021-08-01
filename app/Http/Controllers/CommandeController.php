@@ -488,8 +488,18 @@ class CommandeController extends Controller
     }
 
     // ########################################################################
-    public function index2(Request $request)
-    {
+    public function index22(Request $request){
+        $date = Carbon::now();
+        $categories=Categorie::all();//get data from table
+        $clients = Client::all();
+        return view('managements.commandes.index22', [
+            'clients' =>$clients,
+            'categories' => $categories,
+            'date' => $date,
+        ]);
+    }
+
+    public function index2(Request $request){
         $date = Carbon::now();
         $categories=Categorie::all();//get data from table
         $clients = Client::all();
@@ -499,11 +509,6 @@ class CommandeController extends Controller
             'date' => $date,
         ]);
     }
-
-    public function chargerProducts(Request $request){
-        $data=Produit::select('nom_produit','id')->get();
-        return response()->json($data);
-	}
 
     public function productsCategory(Request $request){
         $data=Produit::select('id','nom_produit','prix_produit_HT')->where('categorie_id',$request->id)->get();
@@ -536,8 +541,8 @@ class CommandeController extends Controller
                 $commande->totale = 0;
                 $commande->save();
                 // ------------ End Commande -------- //
-                // ------------ Begin LigneCommande -------- //
                 if($commande->id){
+                    // ------------ Begin LigneCommande -------- //
                     foreach ($lignes as $ligne) {
                         $lignecommande = new Lignecommande();
                         $lignecommande->commande_id = $commande->id;
@@ -547,11 +552,22 @@ class CommandeController extends Controller
                         $lignecommande->totale_produit = $ligne['total'];
                         $lignecommande->save();
                     }
+                    // ------------ End LigneCommande -------- //
+                    // ------------ Begin Reglement -------- //
+                    $reglement= new Reglement();
+                    $reglement->commande_id = $commande->id;
+                    $reglement->date = $date;
+                    $reglement->nom_client = Client::find($client)->nom_client ;
+                    $reglement->mode_reglement = $request->input('mode');
+                    $reglement->avance = $request->input('avance');
+                    $reglement->reste = $request->input('reste');
+                    $reglement->reglement = $request->input('status');
+                    $reglement->save();
+                    // ------------ End Reglement -------- //
                 }
                 else{
                     return "Problème d'enregistrement de la commande !";
                 }
-                // ------------ End LigneCommande -------- //
             } 
             else{
                 return "Veuillez remplir les champs vides !";

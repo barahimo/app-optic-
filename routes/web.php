@@ -82,7 +82,7 @@ Route::get('/application', 'HomeController@application')->name('app.home');
 
 // ########################################################
 Route::get('/commandes', 'CommandeController@index2')->name('commande.index2');
-Route::get('/chargerProducts','CommandeController@chargerProducts');
+Route::get('/commande22', 'CommandeController@index22')->name('commande.index22');
 Route::get('/productsCategory','CommandeController@productsCategory');
 Route::get('/infosProducts','CommandeController@infosProducts');
 Route::post('/store2','CommandeController@store2');

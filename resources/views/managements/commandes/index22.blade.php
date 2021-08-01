@@ -2,6 +2,7 @@
 @section('contenu')
 <!-- ##################################################################### -->
 <div class="container">
+  <!-- My content -->
   <!-- Begin Commande_Client  -->
   <div class="card text-left">
     <img class="card-img-top" src="holder.js/100px180/" alt="">
@@ -147,7 +148,7 @@
           </div>
           <div class="col-3">
             <label for="nom">Avance :</label>
-            <input type="number" id="avance" name="avance" min="0" class="form-control" placeholder="0.00">
+            <input type="number" id="avance" name="avance"  min="0" class="form-control" placeholder="0.00">
           </div>
           <div class="col-3">
             <label for="reste">Reste :</label>
@@ -164,8 +165,6 @@
   </div>  
   <!-- End Reglement  -->
   <button class="btn btn-secondary" id="valider">Valider La commande</button>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <button class="btn btn-secondary" id="test">test</button>
 </div>
 
 <!-- ---------  BEGIN SCRIPT --------- -->
@@ -191,7 +190,7 @@
         }
       });
     });
-    // -----------End Change Category--------------//
+    // -----------End Change Category--------------//  
     // -----------Change Product--------------//
     $(document).on('change','#product',function(){
       var id=$(this).val();
@@ -368,24 +367,8 @@
       });
     });
     // -----------End valider--------------//
-    // -----------Click TEST--------------//
-    $(document).on('click','#test',function(){
-        var mode = $("#mode");
-        var avance = $("#avance");
-        var table=$('#lignes');
-        var list = table.find('tbody').find('tr'); 
-        if(list.length>0){
-          avance.attr("disabled", true);
-          mode.attr("disabled", true);
-        }
-        else{
-          avance.attr("disabled", false);
-          mode.attr("disabled", false);
-        }
-    });
-    // -----------END TEST--------------//
   });
-  // -----------My function--------------//
+  // My Function
   function remove(id){
     var i = checkIndex(id);
     var table=$('#lignes');
@@ -458,7 +441,7 @@
     var NQte = parseInt(qte) + parseInt(qteNew);
     var NTotal = NQte * NPrix;
     list.eq(i).find('td').eq(3).html(NQte);
-    list.eq(i).find('td').eq(4).html(NTotal);
+    list.eq(i).find('td').eq(4).html(NTotal.toFixed(2));
   }
   function calculSomme(){
     var table=$('#lignes');

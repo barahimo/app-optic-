@@ -204,12 +204,14 @@
                         <span>Commandes</span>
                      </a>
                 </li>
+                <!-- Commande2 -->
                 <li>   
                     <a href="{{ route('commande.index2')}}">
                         <span ><i class="fab fa-shopify"></i></span>
                         <span>Commandes2</span>
-                     </a>
+                    </a>
                 </li>
+                <!-- Commande2 -->
                 <li>   
                     <a href="{{ route('produit.index')}}">
                         <span ><i class="fab fa-product-hunt"></i></span>
