@@ -489,13 +489,28 @@ class CommandeController extends Controller
 
     // ########################################################################
     public function index22(Request $request){
-        $date = Carbon::now();
-        $categories=Categorie::all();//get data from table
-        $clients = Client::all();
+        $commandes = Commande::get();
+        $lignecommandes = Lignecommande::get();
+        $reglements = reglement::get();
+        $clients = Client::get();
         return view('managements.commandes.index22', [
+            'commandes'=>$commandes,
+            'lignecommandes'=>$lignecommandes,
+            'reglements'=>$reglements,
             'clients' =>$clients,
-            'categories' => $categories,
-            'date' => $date,
+        ]);
+    }
+
+    public function getCommandes(Request $request){
+        $commandes = Commande::where('cadre',$request->search)->get();
+        $lignecommandes = Lignecommande::get();
+        $reglements = reglement::get();
+        $clients = Client::get();
+        return response()->json([
+            'commandes'=>$commandes,
+            'lignecommandes'=>$lignecommandes,
+            'reglements'=>$reglements,
+            'clients' =>$clients,
         ]);
     }
 
@@ -535,7 +550,7 @@ class CommandeController extends Controller
                 $commande->nom_client = Client::find($client)->nom_client;
                 $commande->oeil_gauche = $gauche;
                 $commande->oeil_droite = $droite;
-                $commande->cadre = "";
+                $commande->cadre = "non facturée";
                 $commande->mesure_vue = 0;
                 $commande->mesure_visage = 0;
                 $commande->totale = 0;

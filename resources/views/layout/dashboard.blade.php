@@ -212,6 +212,14 @@
                     </a>
                 </li>
                 <!-- Commande2 -->
+                <!-- La liste des Commandes -->
+                <li>   
+                    <a href="{{ route('commande.index22')}}">
+                        <span ><i class="fab fa-shopify"></i></span>
+                        <span>Gestion des Commandes</span>
+                    </a>
+                </li>
+                <!-- La liste des Commandes -->
                 <li>   
                     <a href="{{ route('produit.index')}}">
                         <span ><i class="fab fa-product-hunt"></i></span>
