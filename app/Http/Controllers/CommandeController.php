@@ -488,6 +488,29 @@ class CommandeController extends Controller
     }
 
     // ########################################################################
+    public function edit2($id){
+        $commande = Commande::find($id);
+        $date = Carbon::now();
+        $clients = Client::get();
+        $categories=Categorie::all();
+        return view('managements.commandes.edit2', [
+            'commande' =>$commande,
+            'clients' =>$clients,
+            'date' =>$date,
+            'categories' =>$categories,
+        ]);
+    }
+
+    public function editCommande(Request $request){
+        $lignecommandes = Lignecommande::where('commande_id',$request->id)->get();
+        $reglement = reglement::where('commande_id',$request->id)->first();
+
+        return [
+            'lignecommandes'=>$lignecommandes,
+            'reglement'=>$reglement,
+        ];
+    }
+
     public function index22(Request $request){
         $commandes = Commande::get();
         $lignecommandes = Lignecommande::get();
@@ -502,7 +525,20 @@ class CommandeController extends Controller
     }
 
     public function getCommandes(Request $request){
-        $commandes = Commande::where('cadre',$request->search)->get();
+        $search = $request->search;
+        $client = $request->client;
+        if($search){
+            if($search == "f" || $search == "nf")
+                $commandes = Commande::where('facture',$request->search)->get();
+            else if($search == "r")
+                $commandes = Commande::where('reste','<=',0)->get();
+            else if($search == "nr")
+                $commandes = Commande::where('reste','>',0)->get();
+        }
+        else if($client)
+            $commandes = Commande::where('client_id',$request->client)->get();
+        else
+            $commandes = Commande::get();
         $lignecommandes = Lignecommande::get();
         $reglements = reglement::get();
         $clients = Client::get();
@@ -542,7 +578,12 @@ class CommandeController extends Controller
             $client = $request->input('client');
             $gauche = $request->input('gauche');
             $droite = $request->input('droite');
-            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite)){
+            $total = $request->input('total');
+            $avance = $request->input('avance');
+            $reste = $request->input('reste');
+            $status = $request->input('status');
+
+            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite) && !empty($status)){
                 // ------------ Begin Commande -------- //
                 $commande = new Commande();
                 $commande->date = $date;
@@ -550,10 +591,10 @@ class CommandeController extends Controller
                 $commande->nom_client = Client::find($client)->nom_client;
                 $commande->oeil_gauche = $gauche;
                 $commande->oeil_droite = $droite;
-                $commande->cadre = "non facturée";
-                $commande->mesure_vue = 0;
-                $commande->mesure_visage = 0;
-                $commande->totale = 0;
+                $commande->facture = "nf"; 
+                $commande->avance = $avance;
+                $commande->reste = $reste;
+                $commande->totale = $total;
                 $commande->save();
                 // ------------ End Commande -------- //
                 if($commande->id){
@@ -581,19 +622,98 @@ class CommandeController extends Controller
                     // ------------ End Reglement -------- //
                 }
                 else{
-                    return "Problème d'enregistrement de la commande !";
+                    // return "Problème d'enregistrement de la commande !";
+                    return ['status'=>"error",'message'=>"Problème d'enregistrement de la commande !"];
                 }
             } 
             else{
-                return "Veuillez remplir les champs vides !";
+                // return "Veuillez remplir les champs vides !";
+                return ['status'=>"error",'message'=>"Veuillez remplir les champs vides !"];
             }
         }
         else {
-            return "Veuillez d'ajouter des lignes des commandes !";
+            // return "Veuillez d'ajouter des lignes des commandes !";
+            return ['status'=>"error",'message'=>"Veuillez d'ajouter des lignes des commandes"];
         }
     
         // return response()->json($commande);
-        return "La commande a été bien enregistrée !!";
+        // return "La commande a été bien enregistrée !!";
+        return ['status'=>"success",'message'=>"La commande a été bien enregistrée !!"];
+    }
+
+    public function update2(Request $request){ 
+        $lignes = $request->input('lignes');
+        if(!empty($lignes)){
+            $id = $request->input('id');
+            $date = $request->input('date');
+            $client = $request->input('client');
+            $gauche = $request->input('gauche');
+            $droite = $request->input('droite');
+            $total = $request->input('total');
+            $avance = $request->input('avance');
+            $reste = $request->input('reste');
+            $status = $request->input('status');
+
+            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite) && !empty($status)){
+                // ------------ Begin Commande -------- //
+                $commande = Commande::find($id);
+                $commande->date = $date;
+                $commande->client_id = $client;
+                $commande->nom_client = Client::find($client)->nom_client;
+                $commande->oeil_gauche = $gauche;
+                $commande->oeil_droite = $droite;
+                $commande->facture = "nf"; 
+                $commande->avance = $avance;
+                $commande->reste = $reste;
+                $commande->totale = $total;
+                $commande->save();
+                // ------------ End Commande -------- //
+                if($commande->id){
+                    // ------------ Begin LigneCommande -------- //
+                    $lignecommandes = Lignecommande::where('commande_id',$id)->get();
+                    foreach ($lignecommandes as $ligne) {
+                        $ligne->delete();
+                    }
+                    foreach ($lignes as $ligne) {
+                        $lignecommande = new Lignecommande();
+                        $lignecommande->commande_id = $id;
+                        $lignecommande->produit_id = $ligne['prod_id'];
+                        $lignecommande->nom_produit = $ligne['libelle'];
+                        $lignecommande->Qantite = $ligne['qte'];
+                        $lignecommande->totale_produit = $ligne['total'];
+                        $lignecommande->save();
+                    }
+                    // ------------ End LigneCommande -------- //
+                    // ------------ Begin Reglement -------- //
+                    $reglement = reglement::where('commande_id',$id)->first();
+                    $reglement->commande_id = $id;
+                    $reglement->date = $date;
+                    $reglement->nom_client = Client::find($client)->nom_client ;
+                    $reglement->mode_reglement = $request->input('mode');
+                    $reglement->avance = $request->input('avance');
+                    $reglement->reste = $request->input('reste');
+                    $reglement->reglement = $request->input('status');
+                    $reglement->save();
+                    // ------------ End Reglement -------- //
+                }
+                else{
+                    // return "Problème d'enregistrement de la commande !";
+                    return ['status'=>"error",'message'=>"Problème d'enregistrement de la commande !"];
+                }
+            } 
+            else{
+                // return "Veuillez remplir les champs vides !";
+                return ['status'=>"error",'message'=>"Veuillez remplir les champs vides !"];
+            }
+        }
+        else {
+            // return "Veuillez d'ajouter des lignes des commandes !";
+            return ['status'=>"error",'message'=>"Veuillez d'ajouter des lignes des commandes"];
+        }
+    
+        // return response()->json($commande);
+        // return "La commande a été bien enregistrée !!";
+        return ['status'=>"success",'message'=>"La commande a été bien enregistrée !!"];
     }
     
 }

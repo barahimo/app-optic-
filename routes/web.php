@@ -81,6 +81,7 @@ Route::get('/application', 'HomeController@application')->name('app.home');
 
 
 // ########################################################
+//Commande
 Route::get('/commandes', 'CommandeController@index2')->name('commande.index2');
 Route::get('/getCommandes', 'CommandeController@getCommandes')->name('commande.getCommandes');
 Route::get('/commande22', 'CommandeController@index22')->name('commande.index22');
@@ -88,3 +89,12 @@ Route::get('/gestioncommande', 'CommandeController@index22')->name('commande.ind
 Route::get('/productsCategory','CommandeController@productsCategory');
 Route::get('/infosProducts','CommandeController@infosProducts');
 Route::post('/store2','CommandeController@store2');
+Route::get('/edit2/{id}','CommandeController@edit2')->name('commande.edit2');
+Route::get('/editCommande','CommandeController@editCommande')->name('commande.editCommande');
+Route::post('/update2','CommandeController@update2')->name('commande.update2');
+
+// REglements
+Route::get('/reglements','ReglementController@index2')->name('reglement.index2');
+Route::get('/reglements/create2','ReglementController@create2')->name('reglement.create2');
+Route::get('/getReglements','ReglementController@getReglements')->name('reglement.getReglements');
+

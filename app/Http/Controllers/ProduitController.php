@@ -184,7 +184,7 @@ class ProduitController extends Controller
         $produits =  Produit::where('nom_produit', 'like', "%$q%")
         ->paginate(5);
 
-        return view('managements.produits.search')->with('produits', $produits);  
+            return view('managements.produits.search')->with('produits', $produits);  
     
     }
 }

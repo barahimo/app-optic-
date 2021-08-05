@@ -198,25 +198,25 @@
                         <span>Clients</span>
                      </a>
                 </li>
-                <li>   
+                <!-- <li>   
                     <a href="{{ route('commande.index')}}">
                         <span ><i class="fab fa-shopify"></i></span>
                         <span>Commandes</span>
                      </a>
-                </li>
+                </li> -->
                 <!-- Commande2 -->
-                <li>   
+                <!-- <li>   
                     <a href="{{ route('commande.index2')}}">
                         <span ><i class="fab fa-shopify"></i></span>
                         <span>Commandes2</span>
                     </a>
-                </li>
+                </li> -->
                 <!-- Commande2 -->
                 <!-- La liste des Commandes -->
                 <li>   
                     <a href="{{ route('commande.index22')}}">
                         <span ><i class="fab fa-shopify"></i></span>
-                        <span>Gestion des Commandes</span>
+                        <span>Commandes</span>
                     </a>
                 </li>
                 <!-- La liste des Commandes -->
@@ -241,13 +241,18 @@
                         
                      </a>
                 </li>
-                <li>   
+                <!-- <li>   
                     <a href="{{ route('reglement.index')}}">
                         <span ><i class="fab fa-cc-amazon-pay"></i></span>
                         <span> Règlement</span>
                      </a>
+                </li> -->
+                <li>   
+                    <a href="{{ route('reglement.index2')}}">
+                        <span ><i class="fab fa-cc-amazon-pay"></i></span>
+                        <span> Règlements</span>
+                     </a>
                 </li>
-               
 
             </ul>
         </div>

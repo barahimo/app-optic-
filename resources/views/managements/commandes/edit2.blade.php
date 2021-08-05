@@ -2,6 +2,8 @@
 @section('contenu')
 <!-- ##################################################################### -->
 <div class="container">
+  <p id="ptest">vide</p>
+  <button id="btest">test</button>
   <!-- Begin Commande_Client  -->
   <div class="card text-left">
     <img class="card-img-top" src="holder.js/100px180/" alt="">
@@ -16,21 +18,21 @@
                 class="form-control" 
                 name="date" 
                 id="date" 
-                value={{$date}}
+                value="{{old('date',$commande->date)}}"
                 placeholder="date">
               </div>
-              <div class="col-3">       
+              <div class="col-3">     
                 <select class="form-control" name="client" id="client">
                 @foreach($clients as $client)
-                <option value="{{$client->id }}">{{ $client->nom_client}}</option>
+                <option value="{{$client->id}}" @if ($client->id == old('client_id',$commande->client_id)) selected="selected" @endif>{{ $client->nom_client}}</option>
                 @endforeach
                 </select>
               </div>
               <div class="col-3">
-                <input type="text" class="form-control" name="oeil_gauche" id="gauche" placeholder="oeil_gauche">
+                <input type="text" class="form-control" name="oeil_gauche" id="gauche" placeholder="oeil_gauche" value="{{old('oeil_gauche',$commande->oeil_gauche ?? null)}}">
               </div>
               <div class="col-3">
-                <input type="text" class="form-control" name="oeil_droite" id="droite" placeholder="oeil_droite">
+                <input type="text" class="form-control" name="oeil_droite" id="droite" placeholder="oeil_droite" value="{{old('oeil_droite',$commande->oeil_droite ?? null)}}">
               </div>
             </div>
             <!-- <button type="submit" class="btn btn-success">Submit</button> -->
@@ -78,7 +80,7 @@
           </div>
           <div class="col-3">
             <label for="prix">prix :</label>
-            <input type="number" class="form-control" name="prix" id="prix" value="0.00" min="0">
+            <input type="text" class="form-control" name="prix" id="prix" disabled>
           </div>
           <div class="col-3">
             <label for="qte">Qté :</label>
@@ -163,14 +165,15 @@
     </div>
   </div>  
   <!-- End Reglement  -->
-  <button class="btn btn-secondary" id="valider">Valider La commande</button>
+  <button class="btn btn-secondary" id="valider">Valider Les modifications</button>
   &nbsp;&nbsp;&nbsp;&nbsp;
-  <button class="btn btn-secondary" id="test">test</button>
+  <!-- <button class="btn btn-secondary" id="test">test</button> -->
 </div>
 
 <!-- ---------  BEGIN SCRIPT --------- -->
 <script type="text/javascript">
   $(document).ready(function(){
+    getLignes();
     // -----------Change Category--------------//
     $(document).on('change','#category',function(){
       var cat_id=$(this).val();
@@ -312,6 +315,7 @@
     // -----------Begin valider--------------//
     $(document).on('click','#valider',function(e){
       // e.preventDefault(); //Pour ne peut refresh la page en cas de bouton submit 
+      var cmd_id = <?php echo $commande->id;?>;
       var _token=$('input[name=_token]'); //Envoi des information via method POST
       // ***** BEGIN variables commande ******** //
       var date=$('#date');
@@ -350,8 +354,9 @@
 
       $.ajax({
         type:'post',
-        url:'{!!URL::to('store2')!!}',
+        url:'{!!URL::to('update2')!!}',
         data:{
+          id : cmd_id,
           date : date.val(),
           client : parseInt(client.val()),
           gauche : parseFloat(gauche.val()),
@@ -362,7 +367,6 @@
           avance:parseFloat(avance.val()),
           reste:parseFloat(reste.val()),
           status:status.val(),
-          total:calculSomme().toFixed(2),
         },
         success: function(data){
           Swal.fire(data.message);
@@ -399,6 +403,10 @@
         }
     });
     // -----------END TEST--------------//
+    $(document).on('click','#btest',function(){
+      ftest();
+      console.log('test');
+    });
   });
   // -----------My function--------------//
   function remove(id){
@@ -499,6 +507,59 @@
       status.val("");
     }
     reste.val(NReste.toFixed(2));
+  }
+  function getLignes(){
+    var cmd_id = <?php echo $commande->id;?>;
+    $.ajax({
+        type:'get',
+        url:'{!!URL::to('editCommande')!!}',
+        data:{'id' : cmd_id},
+        success: function(data){
+          var lignecommandes = data.lignecommandes
+          var reglement = data.reglement
+          // -----------BEGIN lignes--------------//
+          var table = $('#lignes');
+          table.find('tbody').html("");
+          var lignes = '';
+          lignecommandes.forEach(ligne => {
+            var prix = ligne.totale_produit/parseInt(ligne.Qantite);
+            lignes+=`<tr>
+                    <td>${ligne.produit_id}</td>
+                    <td>${ligne.nom_produit}</td>
+                    <td>${prix.toFixed(2)}</td>
+                    <td>${ligne.Qantite}</td>
+                    <td>${ligne.totale_produit}</td>
+                    <td>
+                      <button class="btn btn-success" onclick="edit(${ligne.produit_id})"><i class="fas fa-edit"></i></button>
+                      &nbsp;&nbsp;&nbsp;
+                      <button class="btn btn-danger" onclick="remove(${ligne.produit_id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                  </tr>`;
+          });
+          table.find('tbody').append(lignes);
+          var somme=$('#somme');
+          somme.html(calculSomme());
+          // -----------END lignes--------------//
+          // -----------BEGIN Reglement--------------//
+          // console.log(reglement);
+          var mode=$("#mode");
+          var avance=$("#avance");
+          var reste=$('#reste');
+          var status=$("#status");
+          mode.val(reglement.mode_reglement);
+          avance.val(parseFloat(reglement.avance).toFixed(2));
+          reste.val(parseFloat(reglement.reste).toFixed(2));
+          status.val(reglement.reglement);
+          // -----------END Reglement--------------//
+        } ,
+        error:function(err){
+            Swal.fire(err);
+        },
+      });
+  }
+  function ftest(){
+    var p = $('#ptest');
+    p.html('ok');
   }
 </script>
 <!-- ##################################################################### -->

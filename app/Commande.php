@@ -33,4 +33,10 @@ class Commande extends Model
     }
     // protected $date = ['deleted_at'];
 
+
+    public function reglements() 
+    {
+        return $this->hasMany(Reglement::class);
+    }
+
 }

@@ -113,4 +113,76 @@ class ReglementController extends Controller
             "success" => "le réglement a été supprimer avec succès!"
         ]); 
     }
+
+    // *****************************************************
+    public function index2()
+    {
+        $reglements = Reglement::get();
+        $clients = Client::get();
+        
+        return view('managements.réglements.index2', [
+            'reglements' => $reglements,
+            'clients'=>$clients
+        ]);
+    }
+
+    public function getReglements(Request $request)
+    {
+        $client = $request->client;
+        $status = $request->status;
+        if($client){
+            $nom_client = Client::find($client)->nom_client;
+            if($status){
+                if($status == 'nr'){
+                    $reglements = Reglement::with('commande')
+                        ->whereHas('commande' , function($query){$query->where('reste', '>', 0);})
+                        ->where('nom_client',$nom_client)->get();
+                }
+                else if($status == 'r'){
+                    $reglements = Reglement::with('commande')
+                        ->whereHas('commande' , function($query){$query->where('reste', '<=', 0);})
+                        ->where('nom_client',$nom_client)->get();
+                }
+                else if($status == 'all'){
+                    $reglements = Reglement::with('commande')->where('nom_client',$nom_client)->get();
+                }
+            }
+            else 
+                $reglements = [];
+        }
+        else{
+            if($status){
+                if($status == 'nr'){
+                    $reglements = Reglement::with('commande')
+                            ->whereHas('commande' , function($query){$query->where('reste', '>', 0);})
+                        ->get();
+                }
+                else if($status == 'r'){
+                    $reglements = Reglement::with('commande')
+                        ->whereHas('commande' , function($query){$query->where('reste', '<=', 0);})
+                        ->get();
+                }
+                else if($status == 'all'){
+                    $reglements = Reglement::with('commande')->get();
+                }
+            }
+            else 
+                $reglements = [];
+        }        
+        return response()->json($reglements);
+    }
+
+    public function create2(Request $request)
+    {
+        $clients = Client::get();
+        $client = $request->client;
+        if($client){
+            $nom_client = Client::find($client)->nom_client;
+            $commandes = Commande::where('reste', '>', 0)->where('nom_client',$nom_client)->get();
+        }
+        else{
+            $commandes = Commande::where('reste', '>', 0)->get();
+        }
+        return view('managements.réglements.create2',compact('clients','client','commandes'));
+    }
 }
