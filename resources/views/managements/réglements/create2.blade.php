@@ -2,7 +2,6 @@
 @section('contenu')
 <!-- ##################################################################### -->
 <div class="container">
-  <p>Client : {{$client}}</p>
   <div class="row">
     <div class="col-6">
       <select class="form-control" name="client" id="client">
@@ -12,65 +11,19 @@
         @endforeach
       </select>
     </div>
-  </div>
-  <br>
-  <br>
-  <div class="card" style="background-color: rgba(241, 241, 241, 0.842)">
-    <div class="card-body">
-      <table class="table" id="table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Date</th>
-            <th>Commande</th>
-            <th>Client</th>
-            <th>Montant total</th>
-            <th>Montant payer</th>
-            <th>Reste à payer</th>
-            <th>Avance</th>
-            <th>Reste</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
-          @foreach($commandes as $commande)
-          <tr>
-              <td>{{$commande->id}}</td>
-              <td>{{$commande->date}}</td>
-              <td>Cmd_{{$commande->id}}</td>
-              <td>{{$commande->nom_client}}</td>
-              <td>{{$commande->totale}}</td>
-              <td>{{$commande->avance}}</td>
-              <td>{{$commande->reste}}</td>
-              <td>0.00</td>
-              <td>{{$commande->reste}}</td>
-              <td>NR</td>
-          </tr>
-          @endforeach
-        </tbody>
-        <tfoot>
-          @php
-            $totale = 0;
-            $avance = 0;
-            $reste = 0;
-            foreach($commandes as $commande){
-              $totale += $commande->totale;
-              $avance += $commande->avance;
-              $reste += $commande->reste;
-            }
-          @endphp
-          <tr>
-            <th colspan="4"></th>
-            <th>{{number_format($totale, 2, '.', '')}}</th>
-            <th>{{number_format($avance, 2, '.', '')}}</th>
-            <th>{{number_format($reste, 2, '.', '')}}</th>
-          </tr>
-        </tfoot>
-      </table>
+    <div class="col-6">
+      <input type="date" 
+      class="form-control" 
+      name="date" 
+      id="date" 
+      value={{$date}}
+      placeholder="date">
     </div>
   </div>
-   <!-- Begin Reglement  -->
-   <div class="card text-left">
+  <br>
+  <br>
+  <!-- Begin Reglement  -->
+  <div class="card text-left">
     <img class="card-img-top" src="holder.js/100px180/" alt="">
     <div class="card-body">
       <h4 class="card-title">Reglement :</h4>
@@ -101,6 +54,73 @@
     </div>
   </div>  
   <!-- End Reglement  -->
+  <!-- Begin TABLE -->
+  <br>
+  <div class="card" style="background-color: rgba(241, 241, 241, 0.842)">
+    <div class="card-body">
+      <table class="table" id="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Commande</th>
+            <th>Client</th>
+            <th>Montant total</th>
+            <th>Montant payer</th>
+            <th>Reste à payer</th>
+            <th>Avance</th>
+            <th>Reste</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+          @foreach($commandes as $commande)
+          <tr>
+              <td>{{$commande->id}}</td>
+              <td>{{$commande->date}}</td>
+              <td>Cmd_{{$commande->id}}</td>
+              <td>{{$commande->nom_client}}</td>
+              <td>{{$commande->totale}}</td>
+              <td>{{$commande->avance}}</td>
+              <td>{{$commande->reste}}</td>
+              <td>
+                <!-- 0.00 -->
+                <input type="number" min="0" style="width: 50%" value="0.00" onclick="setAvances({{$commande->id}})" onkeyup="setAvances({{$commande->id}})">
+              </td>
+              <td>{{$commande->reste}}</td>
+              <td>NR</td>
+          </tr>
+          @endforeach
+        </tbody>
+        <tfoot>
+          @php
+            $totale = 0;
+            $avance = 0;
+            $reste = 0;
+            foreach($commandes as $commande){
+              $totale += $commande->totale;
+              $avance += $commande->avance;
+              $reste += $commande->reste;
+            }
+          @endphp
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>{{number_format($totale, 2, '.', '')}}</th>
+            <th>{{number_format($avance, 2, '.', '')}}</th>
+            <th>{{number_format($reste, 2, '.', '')}}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+  <!-- End TABLE -->
+  <button class="btn btn-secondary" id="valider">Effectuer le reglement</button>
 </div>
 <!-- ---------  BEGIN SCRIPT --------- -->
 <script type="text/javascript">
@@ -108,6 +128,9 @@
     var avance = $('#avance');
     var reste = $('#reste');
     var stat = $('#status');
+    var mode=$('#mode');
+    var date=$('#date');
+    var client=$('#client');
     var table = $('#table');
     var tbody = table.find('tbody');
     var tfoot = table.find('tfoot');
@@ -128,15 +151,72 @@
       if(navance > sommeReste())
         avance.val(sommeReste());
       if(avance.val()=="")
-        avance.val('0');
+        avance.val(0);
+      // --------------
       calculs();
       calculsLignes();
+      // --------------
+      getTfoot();
     });
     // -----------End keyup Avance--------------//
+    // -----------Begin valider--------------//
+    $(document).on('click','#valider',function(e){
+      var _token=$('input[name=_token]'); //Envoi des information via method POST
+      // ***** BEGIN variables lignes ******** //
+      var list = tbody.find('tr');
+      var array = [];
+      for (let i = 0; i < list.length; i++) {
+        var cmd_id = list.eq(i).find('td').eq(0).html();
+        var avance = list.eq(i).find('td').eq(7).find('input').val();
+        var navance = parseFloat(avance);
+        var reste = list.eq(i).find('td').eq(8).html();
+        var status = list.eq(i).find('td').eq(9).html();
+        if(navance > 0){
+          var obj = {
+                "cmd_id":parseInt(cmd_id),
+                "avance":navance,
+                "reste":parseFloat(reste),
+                "status":status,
+              };
+          array = [...array,obj];
+        }
+      }
+      // ***** END variables lignes ******** //
+      $.ajax({
+        type:'post',
+        url:'{!!URL::to('storeReglements')!!}',
+        data:{
+          _token : _token.val(),
+          date : date.val(),
+          mode:mode.val(),
+          client : parseInt(client.val()),
+          lignes : array,
+        },
+        success: function(data){
+          Swal.fire(data.message);
+          if(data.status == "success"){
+            setTimeout(() => {
+              window.location.assign("/reglements")
+            }, 2000);
+          }
+        } ,
+        error:function(err){
+          if(err.status === 500){
+            Swal.fire(err.statusText);
+          }
+          else{
+            Swal.fire("Erreur d'enregistrement de reglement !");
+          }
+        },
+      });
+    });
+    // -----------End valider--------------//
   });
   // -----------My function--------------//
   test();
   calculs();
+  // --------------
+  getTfoot();
   function test(){
   }
   function search(){ }
@@ -160,6 +240,16 @@
     }
     return navance;
   }
+  function sommeAvance2(){
+    var list = tbody.find('tr');
+    var navance = 0;
+    for (let index = 0; index < list.length; index++) {
+      var ligne = list.eq(index).find('td');
+      var avance = parseFloat(ligne.eq(7).find('input').val());
+      navance += avance;
+    }
+    return navance;
+  }
   function sommeReste(){
     var list = tbody.find('tr');
     var nreste = 0;
@@ -170,14 +260,21 @@
     }
     return nreste;
   }
+  function sommeReste2(){
+    var list = tbody.find('tr');
+    var nreste = 0;
+    for (let index = 0; index < list.length; index++) {
+      var ligne = list.eq(index).find('td');
+      var reste = parseFloat(ligne.eq(8).html());
+      nreste += reste;
+    }
+    return nreste;
+  }
   function calculs(){
     var sreste = sommeReste();
     var res = sreste-parseFloat(avance.val());
     reste.val(res.toFixed(2));
-    if(res>0)
-      stat.val('NR');
-    else
-      stat.val('R');
+    (res>0) ? stat.val('NR'): stat.val('R');
   }
   function calculsLignes(){
     var navance = parseFloat(avance.val());
@@ -198,13 +295,70 @@
         pay = nreste_cmd;
       else 
         pay = reg;
-      av.html(pay);
+      // av.html(pay);
+      av.find('input').val(pay.toFixed(2));
       nres = nreste_cmd - pay;
       res.html(nres);
-      reg -= parseFloat(av.html());
+      // reg -= parseFloat(av.html());
+      reg -= parseFloat(av.find('input').val());
       (nres>0)?stat.html('NR'):stat.html('R');
     }
-    return ntotal;
+    // --------------
+    getTfoot();
+  }
+  function checkIndex(id){
+    var index = -1;
+    var list = tbody.find('tr'); 
+    for (let i = 0; i < list.length; i++) {
+      var cmd_id = list.eq(i).find('td').eq(0).html();
+      if(cmd_id == id){
+        index = i;
+        break;
+      }
+    }
+    return index;
+  }
+  function setAvances(cmd_id){
+    var index = checkIndex(cmd_id);
+    var list = tbody.find('tr');
+    var ligne = list.eq(index).find('td');
+    // --------------
+    var reste_cmd = ligne.eq(6);
+    var nreste_cmd = parseFloat(reste_cmd.html());
+    // --------------
+    var av = ligne.eq(7);
+    var res = ligne.eq(8);
+    var stat = ligne.eq(9);
+    // --------------
+    var input = av.find('input');
+    var pay = parseFloat(input.val());
+    if(pay > nreste_cmd)
+        input.val(nreste_cmd.toFixed(2));
+    if(input.val()=="")
+      input.val(0);
+    // --------------
+    var nres = nreste_cmd - pay;
+    res.html(nres.toFixed(2));
+    (nres>0)?stat.html('NR'):stat.html('R');
+    // --------------
+    avance.val(sommeAvance2().toFixed(2));
+    reste.val(sommeReste2().toFixed(2));
+    (parseFloat(reste.val())>0)?$('#status').val('NR'):$('#status').val('R');
+    // --------------
+    getTfoot();
+  }
+  function getTfoot(){
+    var list = tfoot.find('tr');
+    var total = list.find('th').eq(4);
+    var avance1 = list.find('th').eq(5);
+    var reste1 = list.find('th').eq(6);
+    var avance2 = list.find('th').eq(7);
+    var reste2 = list.find('th').eq(8);
+    total.html(sommeTotal().toFixed(2));
+    avance1.html(sommeAvance().toFixed(2));
+    reste1.html(sommeReste().toFixed(2));
+    avance2.html(sommeAvance2().toFixed(2));
+    reste2.html(sommeReste2().toFixed(2));
   }
   function getReglements(param){
     $.ajax({
@@ -236,9 +390,6 @@
       }
     });
   }
-  // var list = tfoot.find('tr');
-    // var nreste = parseFloat(list.find('th').eq(3).html());
-    // reste.val(nreste.toFixed(2));
 </script>
 <!-- ##################################################################### -->
 @endsection

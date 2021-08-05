@@ -97,4 +97,5 @@ Route::post('/update2','CommandeController@update2')->name('commande.update2');
 Route::get('/reglements','ReglementController@index2')->name('reglement.index2');
 Route::get('/reglements/create2','ReglementController@create2')->name('reglement.create2');
 Route::get('/getReglements','ReglementController@getReglements')->name('reglement.getReglements');
+Route::post('/storeReglements','ReglementController@store2')->name('reglement.store2');;
 

@@ -6,6 +6,7 @@ use App\Client;
 use App\Commande;
 use App\Reglement;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ReglementController extends Controller
 {
@@ -176,6 +177,7 @@ class ReglementController extends Controller
     {
         $clients = Client::get();
         $client = $request->client;
+        $date = Carbon::now();
         if($client){
             $nom_client = Client::find($client)->nom_client;
             $commandes = Commande::where('reste', '>', 0)->where('nom_client',$nom_client)->get();
@@ -183,6 +185,44 @@ class ReglementController extends Controller
         else{
             $commandes = Commande::where('reste', '>', 0)->get();
         }
-        return view('managements.réglements.create2',compact('clients','client','commandes'));
+        return view('managements.réglements.create2',compact('clients','client','commandes','date'));
+    }
+
+    public function store2(Request $request){ 
+        $lignes = $request->input('lignes');
+        if(!empty($lignes)){
+            $date = $request->input('date');
+            $client = $request->input('client');
+            $mode = $request->input('mode');
+
+            if(!empty($date) && !empty($client)){
+                // ------------ Begin reglement -------- //
+                foreach ($lignes as $ligne) {
+                    $reglement = new Reglement();
+                    $reglement->date = $date;
+                    $reglement->nom_client = Client::find($client)->nom_client;
+                    $reglement->mode_reglement = $mode;
+                    $reglement->avance = $ligne['avance'];
+                    $reglement->reste = $ligne['reste'];
+                    $reglement->reglement = $ligne['status'];
+                    $reglement->commande_id = $ligne['cmd_id'];
+                    $reglement->save();
+                    
+                    $commande = Commande::find($ligne['cmd_id']);
+                    $commande->avance = $ligne['avance'];
+                    $commande->reste = $ligne['reste'];
+                    $commande->save();
+                }
+                // ------------ End Reglement -------- //
+            } 
+            else{
+                return ['status'=>"error",'message'=>"Veuillez remplir les champs vides !"];
+            }
+        }
+        else {
+            return ['status'=>"error",'message'=>"Veuillez d'ajouter des reglements"];
+        }
+    
+        return ['status'=>"success",'message'=>"Le reglement a été bien enregistrée !!"];
     }
 }
