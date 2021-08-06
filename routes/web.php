@@ -88,14 +88,18 @@ Route::get('/commande22', 'CommandeController@index22')->name('commande.index22'
 Route::get('/gestioncommande', 'CommandeController@index22')->name('commande.index22');
 Route::get('/productsCategory','CommandeController@productsCategory');
 Route::get('/infosProducts','CommandeController@infosProducts');
-Route::post('/store2','CommandeController@store2');
+Route::post('/storeCommande','CommandeController@store2')->name('commande.store2');
 Route::get('/edit2/{id}','CommandeController@edit2')->name('commande.edit2');
 Route::get('/editCommande','CommandeController@editCommande')->name('commande.editCommande');
 Route::post('/update2','CommandeController@update2')->name('commande.update2');
 
 // REglements
 Route::get('/reglements','ReglementController@index2')->name('reglement.index2');
+Route::get('/reglements2','ReglementController@index22')->name('reglement.index22');
 Route::get('/reglements/create2','ReglementController@create2')->name('reglement.create2');
+Route::get('/reglements/create3','ReglementController@create3')->name('reglement.create3');
 Route::get('/getReglements','ReglementController@getReglements')->name('reglement.getReglements');
-Route::post('/storeReglements','ReglementController@store2')->name('reglement.store2');;
+Route::get('/getReglements2','ReglementController@getReglements2')->name('reglement.getReglements2');
+Route::post('/storeReglements','ReglementController@store2')->name('reglement.store2');
+Route::post('/storeReglements3','ReglementController@store3')->name('reglement.store3');
 

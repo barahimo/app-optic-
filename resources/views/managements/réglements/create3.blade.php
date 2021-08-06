@@ -4,14 +4,6 @@
 <div class="container">
   <div class="row">
     <div class="col-6">
-      <select class="form-control" name="client" id="client">
-        <option value="">--La liste des clients--</option>
-        @foreach($clients as $item)
-        <option value="{{$item->id }}" @if ($item->id == old('client_id',$client)) selected="selected" @endif>{{ $item->nom_client}}</option>
-        @endforeach
-      </select>
-    </div>
-    <div class="col-6">
       <input type="date" 
       class="form-control" 
       name="date" 
@@ -74,7 +66,6 @@
         </tr>
         </thead>
         <tbody>
-          @foreach($commandes as $commande)
           <tr>
               <td>{{$commande->id}}</td>
               <td>{{$commande->date}}</td>
@@ -84,37 +75,13 @@
               <td>{{$commande->avance}}</td>
               <td>{{$commande->reste}}</td>
               <td>
-                <!-- 0.00 -->
                 <input type="number" min="0" style="width: 50%" value="0.00" onclick="setAvances({{$commande->id}})" onkeyup="setAvances({{$commande->id}})">
               </td>
               <td>{{$commande->reste}}</td>
               <td>NR</td>
           </tr>
-          @endforeach
         </tbody>
         <tfoot>
-          @php
-            $totale = 0;
-            $avance = 0;
-            $reste = 0;
-            foreach($commandes as $commande){
-              $totale += $commande->totale;
-              $avance += $commande->avance;
-              $reste += $commande->reste;
-            }
-          @endphp
-          <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th>{{number_format($totale, 2, '.', '')}}</th>
-            <th>{{number_format($avance, 2, '.', '')}}</th>
-            <th>{{number_format($reste, 2, '.', '')}}</th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
         </tfoot>
       </table>
     </div>
@@ -164,9 +131,10 @@
       var _token=$('input[name=_token]'); //Envoi des information via method POST
       // ***** BEGIN variables lignes ******** //
       var list = tbody.find('tr');
+      var i = 0;
       var array = [];
-      for (let i = 0; i < list.length; i++) {
         var cmd_id = list.eq(i).find('td').eq(0).html();
+        var client = list.eq(i).find('td').eq(3).html();
         var avance = list.eq(i).find('td').eq(7).find('input').val();
         var navance = parseFloat(avance);
         var reste = list.eq(i).find('td').eq(8).html();
@@ -174,29 +142,28 @@
         if(navance > 0){
           var obj = {
                 "cmd_id":parseInt(cmd_id),
+                "client":client,
                 "avance":navance,
                 "reste":parseFloat(reste),
                 "status":status,
               };
           array = [...array,obj];
         }
-      }
       // ***** END variables lignes ******** //
       $.ajax({
         type:'post',
-        url:'{!!URL::to('storeReglements')!!}',
+        url:'{!!URL::to('storeReglements3')!!}',
         data:{
           _token : _token.val(),
           date : date.val(),
           mode:mode.val(),
-          client : parseInt(client.val()),
           lignes : array,
         },
         success: function(data){
           Swal.fire(data.message);
           if(data.status == "success"){
             setTimeout(() => {
-              window.location.assign("/reglements2")
+              window.location.assign("/gestioncommande")
             }, 2000);
           }
         } ,

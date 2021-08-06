@@ -44,6 +44,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lykmapipo/themify-icons@0.1.2/css/themify-icons.css">
     <title>Document</title>
+
     <style>
     :root{
         --main-color: #027581;
@@ -247,8 +248,14 @@
                         <span> Règlement</span>
                      </a>
                 </li> -->
-                <li>   
+                <!-- <li>   
                     <a href="{{ route('reglement.index2')}}">
+                        <span ><i class="fab fa-cc-amazon-pay"></i></span>
+                        <span> Règlements</span>
+                     </a>
+                </li> -->
+                <li>   
+                    <a href="{{ route('reglement.index22')}}">
                         <span ><i class="fab fa-cc-amazon-pay"></i></span>
                         <span> Règlements</span>
                      </a>

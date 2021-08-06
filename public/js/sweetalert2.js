@@ -3206,7 +3206,7 @@ if (typeof this !== 'undefined' && this.Sweetalert2){  this.swal = this.sweetAle
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\gestion-optic\node_modules\sweetalert2\dist\sweetalert2.js */"./node_modules/sweetalert2/dist/sweetalert2.js");
+module.exports = __webpack_require__(/*! C:\laragon\www\RACHIDA OUBOUALI\app-optic\node_modules\sweetalert2\dist\sweetalert2.js */"./node_modules/sweetalert2/dist/sweetalert2.js");
 
 
 /***/ })

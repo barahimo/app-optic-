@@ -116,8 +116,17 @@ class ReglementController extends Controller
     }
 
     // *****************************************************
-    public function index2()
-    {
+    public function index22(){
+        $commandes = Commande::with('reglements')->get();
+        $clients = Client::get();
+        
+        return view('managements.réglements.index22', [
+            'commandes' => $commandes,
+            'clients'=>$clients
+        ]);
+    }
+
+    public function index2(){
         $reglements = Reglement::get();
         $clients = Client::get();
         
@@ -127,8 +136,7 @@ class ReglementController extends Controller
         ]);
     }
 
-    public function getReglements(Request $request)
-    {
+    public function getReglements(Request $request){
         $client = $request->client;
         $status = $request->status;
         if($client){
@@ -173,8 +181,56 @@ class ReglementController extends Controller
         return response()->json($reglements);
     }
 
-    public function create2(Request $request)
-    {
+    public function getReglements2(Request $request){
+        $client = $request->client;
+        $status = $request->status;
+        if($client){
+            $nom_client = Client::find($client)->nom_client;
+            if($status){
+                if($status == 'nr'){
+                    $commandes = Commande::with('reglements')
+                        ->where('reste', '>', 0)
+                        ->where('nom_client',$nom_client)
+                        ->get();
+                }
+                else if($status == 'r'){
+                    $commandes = Commande::with('reglements')
+                        ->where('reste', '<=', 0)
+                        ->where('nom_client',$nom_client)
+                        ->get();
+                }
+                else if($status == 'all'){
+                    $commandes = Commande::with('reglements')
+                    ->where('nom_client',$nom_client)
+                    ->get();
+                }
+            }
+            else 
+                $commandes = [];
+        }
+        else{
+            if($status){
+                if($status == 'nr'){
+                    $commandes = Commande::with('reglements')
+                        ->where('reste', '>', 0)
+                        ->get();
+                }
+                else if($status == 'r'){
+                    $commandes = Commande::with('reglements')
+                        ->where('reste', '<=', 0)
+                        ->get();
+                }
+                else if($status == 'all'){
+                    $commandes = Commande::with('reglements')->get();
+                }
+            }
+            else 
+                $commandes = [];
+        }        
+        return response()->json($commandes);
+    }
+
+    public function create2(Request $request){
         $clients = Client::get();
         $client = $request->client;
         $date = Carbon::now();
@@ -186,6 +242,13 @@ class ReglementController extends Controller
             $commandes = Commande::where('reste', '>', 0)->get();
         }
         return view('managements.réglements.create2',compact('clients','client','commandes','date'));
+    }
+
+    public function create3(Request $request){
+        $commande_id = $request->commande;
+        $date = Carbon::now();
+        $commande = Commande::find($commande_id);
+        return view('managements.réglements.create3',compact('commande','date'));
     }
 
     public function store2(Request $request){ 
@@ -209,7 +272,7 @@ class ReglementController extends Controller
                     $reglement->save();
                     
                     $commande = Commande::find($ligne['cmd_id']);
-                    $commande->avance = $ligne['avance'];
+                    $commande->avance = $commande->avance+$ligne['avance'];
                     $commande->reste = $ligne['reste'];
                     $commande->save();
                 }
@@ -224,5 +287,41 @@ class ReglementController extends Controller
         }
     
         return ['status'=>"success",'message'=>"Le reglement a été bien enregistrée !!"];
+    }
+
+    public function store3(Request $request){ 
+        $lignes = $request->input('lignes');
+        if(!empty($lignes)){
+            $date = $request->input('date');
+            $mode = $request->input('mode');
+            if(!empty($date)){
+                // ------------ Begin reglement -------- //
+                foreach ($lignes as $ligne) {
+                    $reglement = new Reglement();
+                    $reglement->date = $date;
+                    $reglement->mode_reglement = $mode;
+                    $reglement->nom_client = $ligne['client'];
+                    $reglement->avance = $ligne['avance'];
+                    $reglement->reste = $ligne['reste'];
+                    $reglement->reglement = $ligne['status'];
+                    $reglement->commande_id = $ligne['cmd_id'];
+                    $reglement->save();
+                    
+                    $commande = Commande::find($ligne['cmd_id']);
+                    $commande->avance = $commande->avance+$ligne['avance'];
+                    $commande->reste = $ligne['reste'];
+                    $commande->save();
+                }
+                // ------------ End Reglement -------- //
+            } 
+            else{
+                return ['status'=>"error",'message'=>"Veuillez remplir les champs vides !"];
+            }
+        }
+        else {
+            return ['status'=>"error",'message'=>"Veuillez d'effectuer le règlement"];
+        }
+    
+        return ['status'=>"success",'message'=>"Le règlement a été bien enregistrée !!"];
     }
 }

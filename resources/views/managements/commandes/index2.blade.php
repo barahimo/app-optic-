@@ -27,10 +27,10 @@
                 </select>
               </div>
               <div class="col-3">
-                <input type="text" class="form-control" name="oeil_gauche" id="gauche" placeholder="oeil_gauche">
+                <input type="text" class="form-control" name="oeil_gauche" id="gauche" placeholder="oeil_gauche" value="0.5">
               </div>
               <div class="col-3">
-                <input type="text" class="form-control" name="oeil_droite" id="droite" placeholder="oeil_droite">
+                <input type="text" class="form-control" name="oeil_droite" id="droite" placeholder="oeil_droite" value="0.7">
               </div>
             </div>
             <!-- <button type="submit" class="btn btn-success">Submit</button> -->
@@ -147,7 +147,7 @@
           </div>
           <div class="col-3">
             <label for="nom">Avance :</label>
-            <input type="number" id="avance" name="avance" min="0" class="form-control" placeholder="0.00">
+            <input type="number" id="avance" name="avance" min="0" class="form-control" placeholder="0.00" value="0">
           </div>
           <div class="col-3">
             <label for="reste">Reste :</label>
@@ -345,12 +345,14 @@
       var mode =$('#mode');
       var avance= $('#avance');
       var reste =$('#reste');
-      var status =$('#status');
+      // var status = $('#status');
+      var status = "R";
+      if(parseFloat(reste.val()) > 0) 
+        status = "NR" ;
       // ***** END variables reglements ******** //
-
       $.ajax({
         type:'post',
-        url:'{!!URL::to('store2')!!}',
+        url:'{!!URL::to('storeCommande')!!}',
         data:{
           date : date.val(),
           client : parseInt(client.val()),
@@ -361,8 +363,9 @@
           mode:mode.val(),
           avance:parseFloat(avance.val()),
           reste:parseFloat(reste.val()),
-          status:status.val(),
-          total:calculSomme().toFixed(2),
+          // status:status.val(),
+          status:status,
+          total:calculSomme(),
         },
         success: function(data){
           Swal.fire(data.message);

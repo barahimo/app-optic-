@@ -583,7 +583,7 @@ class CommandeController extends Controller
             $reste = $request->input('reste');
             $status = $request->input('status');
 
-            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite) && !empty($status)){
+            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite)){
                 // ------------ Begin Commande -------- //
                 $commande = new Commande();
                 $commande->date = $date;
@@ -610,34 +610,31 @@ class CommandeController extends Controller
                     }
                     // ------------ End LigneCommande -------- //
                     // ------------ Begin Reglement -------- //
-                    $reglement= new Reglement();
-                    $reglement->commande_id = $commande->id;
-                    $reglement->date = $date;
-                    $reglement->nom_client = Client::find($client)->nom_client ;
-                    $reglement->mode_reglement = $request->input('mode');
-                    $reglement->avance = $request->input('avance');
-                    $reglement->reste = $request->input('reste');
-                    $reglement->reglement = $request->input('status');
-                    $reglement->save();
+                    if($request->input('avance')>0){
+                        $reglement= new Reglement();
+                        $reglement->commande_id = $commande->id;
+                        $reglement->date = $date;
+                        $reglement->nom_client = Client::find($client)->nom_client ;
+                        $reglement->mode_reglement = $request->input('mode');
+                        $reglement->avance = $request->input('avance');
+                        $reglement->reste = $request->input('reste');
+                        $reglement->reglement = $request->input('status');
+                        $reglement->save();
+                    }
                     // ------------ End Reglement -------- //
                 }
                 else{
-                    // return "Problème d'enregistrement de la commande !";
                     return ['status'=>"error",'message'=>"Problème d'enregistrement de la commande !"];
                 }
             } 
             else{
-                // return "Veuillez remplir les champs vides !";
                 return ['status'=>"error",'message'=>"Veuillez remplir les champs vides !"];
             }
         }
         else {
-            // return "Veuillez d'ajouter des lignes des commandes !";
             return ['status'=>"error",'message'=>"Veuillez d'ajouter des lignes des commandes"];
         }
     
-        // return response()->json($commande);
-        // return "La commande a été bien enregistrée !!";
         return ['status'=>"success",'message'=>"La commande a été bien enregistrée !!"];
     }
 

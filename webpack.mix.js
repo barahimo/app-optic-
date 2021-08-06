@@ -17,3 +17,6 @@ mix.js('resources/js/app.js', 'public/js')
 mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js')
     .postCss('node_modules/sweetalert2/dist/sweetalert2.css', 'public/css');
 
+
+mix.browserSync('127.0.0.1:8000');
+

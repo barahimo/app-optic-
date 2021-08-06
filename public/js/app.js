@@ -49968,9 +49968,9 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\gestion-optic\resources\js\app.js */"./resources/js/app.js");
-__webpack_require__(/*! C:\xampp\htdocs\gestion-optic\resources\sass\app.scss */"./resources/sass/app.scss");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\gestion-optic\node_modules\sweetalert2\dist\sweetalert2.css */"./node_modules/sweetalert2/dist/sweetalert2.css");
+__webpack_require__(/*! C:\laragon\www\RACHIDA OUBOUALI\app-optic\resources\js\app.js */"./resources/js/app.js");
+__webpack_require__(/*! C:\laragon\www\RACHIDA OUBOUALI\app-optic\resources\sass\app.scss */"./resources/sass/app.scss");
+module.exports = __webpack_require__(/*! C:\laragon\www\RACHIDA OUBOUALI\app-optic\node_modules\sweetalert2\dist\sweetalert2.css */"./node_modules/sweetalert2/dist/sweetalert2.css");
 
 
 /***/ })
