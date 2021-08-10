@@ -489,7 +489,8 @@ class CommandeController extends Controller
 
     // ########################################################################
     public function edit2($id){
-        $commande = Commande::find($id);
+        $commande = Commande::with('reglements')->find($id);
+        // return $commande;
         $date = Carbon::now();
         $clients = Client::get();
         $categories=Categorie::all();
@@ -562,7 +563,7 @@ class CommandeController extends Controller
     }
 
     public function productsCategory(Request $request){
-        $data=Produit::select('id','nom_produit','prix_produit_HT')->where('categorie_id',$request->id)->get();
+        $data=Produit::select('id','nom_produit','prix_produit_TTC')->where('categorie_id',$request->id)->get();
         return response()->json($data);
 	}
 
@@ -646,12 +647,20 @@ class CommandeController extends Controller
             $client = $request->input('client');
             $gauche = $request->input('gauche');
             $droite = $request->input('droite');
-            $total = $request->input('total');
-            $avance = $request->input('avance');
-            $reste = $request->input('reste');
-            $status = $request->input('status');
 
-            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite) && !empty($status)){
+            // $total = $request->input('total');
+            // $avance = $request->input('avance');
+            // $reste = $request->input('reste');
+            // $status = $request->input('status');
+
+            $reglements = $request->input('reglements');
+            $cmd_avance = $request->input('cmd_avance');
+            $cmd_total = $request->input('cmd_total');
+            $cmd_reste = $request->input('cmd_reste');
+
+            // return ['status'=>"error",'message'=>$reglements[0]['reg_id']];
+
+            if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite)){
                 // ------------ Begin Commande -------- //
                 $commande = Commande::find($id);
                 $commande->date = $date;
@@ -660,9 +669,12 @@ class CommandeController extends Controller
                 $commande->oeil_gauche = $gauche;
                 $commande->oeil_droite = $droite;
                 $commande->facture = "nf"; 
-                $commande->avance = $avance;
-                $commande->reste = $reste;
-                $commande->totale = $total;
+                // $commande->avance = $avance;
+                // $commande->reste = $reste;
+                // $commande->totale = $total;
+                $commande->avance = $cmd_avance;
+                $commande->reste = $cmd_reste;
+                $commande->totale = $cmd_total;
                 $commande->save();
                 // ------------ End Commande -------- //
                 if($commande->id){
@@ -682,35 +694,119 @@ class CommandeController extends Controller
                     }
                     // ------------ End LigneCommande -------- //
                     // ------------ Begin Reglement -------- //
-                    $reglement = reglement::where('commande_id',$id)->first();
-                    $reglement->commande_id = $id;
-                    $reglement->date = $date;
-                    $reglement->nom_client = Client::find($client)->nom_client ;
-                    $reglement->mode_reglement = $request->input('mode');
-                    $reglement->avance = $request->input('avance');
-                    $reglement->reste = $request->input('reste');
-                    $reglement->reglement = $request->input('status');
-                    $reglement->save();
+                    // $reglement = reglement::where('commande_id',$id)->first();
+                    // $reglement->commande_id = $id;
+                    // $reglement->date = $date;
+                    // $reglement->nom_client = Client::find($client)->nom_client ;
+                    // $reglement->mode_reglement = $request->input('mode');
+                    // $reglement->avance = $request->input('avance');
+                    // $reglement->reste = $request->input('reste');
+                    // $reglement->reglement = $request->input('status');
+                    // $reglement->save();
+                    foreach ($reglements as $reg) {
+                        $reglement = reglement::find($reg['reg_id']);
+                        $reglement->reste = $reg['reste'];
+                        $reglement->reglement = $reg['status'];;
+                        $reglement->save();
+                    }
                     // ------------ End Reglement -------- //
                 }
                 else{
-                    // return "Problème d'enregistrement de la commande !";
                     return ['status'=>"error",'message'=>"Problème d'enregistrement de la commande !"];
                 }
             } 
             else{
-                // return "Veuillez remplir les champs vides !";
                 return ['status'=>"error",'message'=>"Veuillez remplir les champs vides !"];
             }
         }
         else {
-            // return "Veuillez d'ajouter des lignes des commandes !";
             return ['status'=>"error",'message'=>"Veuillez d'ajouter des lignes des commandes"];
         }
-    
-        // return response()->json($commande);
-        // return "La commande a été bien enregistrée !!";
         return ['status'=>"success",'message'=>"La commande a été bien enregistrée !!"];
+    }
+
+    public function facture2(Request $request){
+        $datetime = Carbon::now();
+        $date = $datetime->isoFormat('YYYY-MM-DD');
+        $year = $datetime->isoFormat('YY');
+        $month = $datetime->isoFormat('MM');
+        // -------- test la date -------- //
+        // $time = strtotime('02/16/2023');
+        // $date = date('Y-m-d',$time);
+        // $year = date('y',$time);
+        // $month = date('m',$time);
+        // ---------------------        
+        $count = Facture::get();
+        (count($count)>0) ? $lastcode = Facture::get()->last()->code : $lastcode = null;
+        $str = 1;
+        if(isset($lastcode)){
+            $list = explode("-",$lastcode);
+            // $f = $list[0];
+            $y = substr($list[1],0,2);
+            // $m = substr($list[1],2,2);
+            $n = $list[2];
+            ($y == $year) ? $str = $n+1 : $str = 1;
+        } 
+        $pad = str_pad($str,4,"0",STR_PAD_LEFT);
+        $code = 'FA-'.$year.''.$month.'-'.$pad;
+        // ---------------------        
+
+        $cmd_id = $request->commande;
+        $commande = Commande::with('client')->find($cmd_id);
+        $lignecommandes = Lignecommande::with('produit')->where('commande_id', '=', $cmd_id)->get();
+        $prix_HT = 0;
+        foreach($lignecommandes as $ligne){
+            $prix_HT = $prix_HT +  ($ligne->produit->prix_produit_HT * $ligne->Qantite);
+            $ligne->nom_produit = $ligne->produit->nom_produit;  
+        }
+        $TVA = 0;
+        foreach($lignecommandes as $ligne){
+            $TVA = $TVA +  ($ligne->produit->prix_produit_HT * $ligne->Qantite * $ligne->produit->TVA) ;
+        }
+        $priceTotal = 0;
+        foreach($lignecommandes as $ligne){
+            $priceTotal =  floatval($priceTotal  + $ligne->totale_produit) ;
+        }
+        return view('managements.commandes.facture2', [
+            'cmd_id' =>  $cmd_id, 
+            'date' =>  $date, 
+            'year' =>  $year, 
+            'month' =>  $month, 
+            'code' =>  $code, 
+            'lignecommandes' =>  $lignecommandes,
+            'priceTotal'  => $priceTotal,
+            'prix_HT' => $prix_HT,
+            'TVA' => $TVA,
+            'commande' => $commande
+        ]);
+    }
+
+    public function storefacture2( Request $request){
+        $cmd_id = $request->input('commande_id');
+        $factures = Facture::where('commande_id','=',$cmd_id)->get();
+        if($factures->count()>0)
+            $msg= "La commande a été déja facturée! ";
+        else{
+            $facture = new Facture();
+            $facture->totale_HT = $request->input('totale_HT');
+            $facture->totale_TVA = $request->input('totale_TVA');
+            $facture->totale_TTC = $request->input('totale_TTC');
+            $facture->commande_id = $request->input('commande_id');
+            $facture->reglement = $request->input('reglement');
+            $facture->date = $request->input('date');
+            $facture->code = $request->input('code');
+            $facture->save();
+            $msg= "la facture a été bien enregistré vous devez ajouter le règlement de la commande N° .$facture->command_id ";
+            if($facture->id){
+                $commande = Commande::find($facture->commande_id);
+                $commande->facture = "f";
+                $commande->save();
+            }
+
+        }
+        return redirect()->route('commande.index22')->with([
+            "status" => $msg
+        ]); 
     }
     
 }

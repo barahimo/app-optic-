@@ -283,10 +283,10 @@
                         <div class="col-md-12">
                             <input type="text" class="form-control" name="solde" placeholder="solde">
                         </div>
-                        <label class="label col-md-9 control-label">Code :</label>
+                        <!-- <label class="label col-md-9 control-label">Code :</label>
                         <div class="col-md-12">
                             <input type="text" class="form-control" name="code" placeholder="code">
-                        </div>
+                        </div> -->
 
 
                         {{-- <label class="label col-md-9 control-label">Code client:</label>

@@ -63,7 +63,7 @@
         
         </tr>
         <tr >
-            <th colspan="5" style="text-align:center; background-color:rgb(235, 233, 233); font-size:20px">Facture N° :FA {{$commande->id}}</th>
+            <th colspan="5" style="text-align:center; background-color:rgb(235, 233, 233); font-size:20px">Facture N° : {{$facture->code}}</th>
         
         </tr>
         {{-- <tr >
@@ -80,7 +80,7 @@
             <th>Designation</th>
             <th>PU</th>
             <th>Quantité</th>
-            <th> Taux TVA</th>
+            <th>Taux TVA</th>
             <th>Montant TTC</th>
         </tr>
     </thead>

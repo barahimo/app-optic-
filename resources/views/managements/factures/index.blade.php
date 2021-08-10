@@ -58,12 +58,11 @@
                      <thead>
                          <tr>
                              <th>#</th>
-                             
                              <th>N° commande</th>
                              <th>client_id</th>
-                             <th> Totale_HT</th>
-                             <th> Totale_TVA</th>
-                             <th> Totale_TTC</th>
+                             <th>Totale_HT</th>
+                             <th>Totale_TVA</th>
+                             <th>Totale_TTC</th>
                              
 
                             
@@ -87,14 +86,15 @@
                                  
 
                                  
-                                   <a href="{{ action('FactureController@show',['facture'=> $facture])}}" class="btn btn-secondary btn-md"><i class="fas fa-info"></i></a>
+                                   <!-- <a href="{{ action('FactureController@show',['facture'=> $facture])}}" class="btn btn-secondary btn-md"><i class="fas fa-info"></i></a> -->
+                                   <a href="{{ action('FactureController@show2',['facture'=> $facture])}}" class="btn btn-secondary btn-md"><i class="fas fa-info"></i></a>
                                    @if( Auth::user()->is_admin )
                                    <a href="{{route('facture.edit',['facture'=> $facture])}}"class="btn btn-success btn-md"><i class="fas fa-edit"></i></a>
-                                <button class="btn btn-danger btn-flat btn-md remove-facture" 
-                                data-id="{{ $facture->id }}" 
-                                data-action="{{ route('facture.destroy',$facture->id) }}"> 
-                                <i class="fas fa-trash"></i>
-                               </button>
+                                    <button class="btn btn-danger btn-flat btn-md remove-facture" 
+                                    data-id="{{ $facture->id }}" 
+                                    data-action="{{ route('facture.destroy',$facture->id) }}"> 
+                                    <i class="fas fa-trash"></i>
+                                    </button>
                                     @endif
                              </td>
                          </tr>

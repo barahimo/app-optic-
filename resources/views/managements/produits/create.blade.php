@@ -276,8 +276,15 @@
                            
                             <label class="label col-md-9 control-label">TVA:</label>
                             <div class="col-md-12">
-                                <input type="text" class="form-control" name="TVA" placeholder="TVA"   >
+                                <select name="TVA" id="TVA" class="form-control">
+                                    <option value="">---TVA---</option>
+                                    <option value="20">20</option>
+                                    <option value="14">14</option>
+                                    <option value="10">10</option>
+                                    <option value="7">7</option>
+                                </select>
                             </div>
+                            <!-- <input type="text" class="form-control" name="TVA" placeholder="TVA"   > -->
                             
                             <label class="label col-md-9 control-label">Prix produit TH :</label>
                             <div class="col-md-12">

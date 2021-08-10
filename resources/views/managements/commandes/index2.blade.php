@@ -182,7 +182,7 @@
         success:function(data){
           var options = '<option value="0" disabled="true" selected="true">-Product-</option>';
           for(var i=0;i<data.length;i++){
-            options+=`<option value="${data[i].id}">${data[i].nom_produit} | ${data[i].prix_produit_HT}</option>`;
+            options+=`<option value="${data[i].id}">${data[i].nom_produit} | ${data[i].prix_produit_TTC}</option>`;
           }  
           product.html("");        
           product.append(options);        
@@ -207,8 +207,8 @@
         success:function(data){
           prod_id.val(data.id) ;        
           libelle.val(data.nom_produit) ;        
-          prix.val(data.prix_produit_HT);                
-          total.val(data.prix_produit_HT);   
+          prix.val(data.prix_produit_TTC);                
+          total.val(data.prix_produit_TTC);   
           qte.val("1");
         },
         error:function(){

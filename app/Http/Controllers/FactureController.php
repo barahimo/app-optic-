@@ -121,6 +121,7 @@ class FactureController extends Controller
 
       public function show(Request $request, Facture $facture){
 
+        $facture = $facture;
         // $lastOne = DB::table('commandes')->latest('id')->first();
         $commande = Commande::with('client')->where('id', "=", $facture->commande_id)->first();
     //    dd($commande);
@@ -162,9 +163,35 @@ class FactureController extends Controller
              'priceTotal'  => $priceTotal,
              'prix_HT' => $prix_HT,
              'TVA' => $TVA,
-             'commande' => $commande
+             'commande' => $commande,
+             'facture' => $facture
         ]);
     }
 
+    public function show2(Request $request, Facture $facture){
+        $facture = $facture;
+        $commande = Commande::with('client')->where('id', "=", $facture->commande_id)->first();
+        $lignecommandes =  Lignecommande::with('produit')->where('commande_id', '=', $commande->id)->get();
+        $prix_HT = 0;
+        foreach($lignecommandes as $q){
+           $prix_HT = $prix_HT +  ($q->produit->prix_produit_HT * $q->Qantite);
+        }
+         $TVA = 0;
+        foreach($lignecommandes as $q){
+           $TVA = $TVA +  ($q->produit->prix_produit_HT * $q->Qantite * $q->produit->TVA) ;
+        }
+        $priceTotal = 0;
+        foreach($lignecommandes as $p){
+            $priceTotal = floatval($priceTotal  + $p->totale_produit) ;
+        }
+        return view('managements.factures.show2', [
+            'lignecommandes' =>  $lignecommandes,
+             'priceTotal'  => $priceTotal,
+             'prix_HT' => $prix_HT,
+             'TVA' => $TVA,
+             'commande' => $commande,
+             'facture' => $facture
+        ]);
+    }
 
 }

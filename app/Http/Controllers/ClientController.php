@@ -18,18 +18,20 @@ class ClientController extends Controller
   
     public function index( Request $request)
     {
+        // $clients = Client::withTrashed()->get();
+        // $clients = Client::onlyTrashed()->get();
+        // return $clients;
+
         try{ 
-
-       $clients = Client::orderBy('id','desc')->paginate(3);
-       return view('managements.clients.index', compact('clients'));
-
+            $clients = Client::orderBy('id','desc')->paginate(3);
+            return view('managements.clients.index', compact('clients'));
         }
         catch(Throwable $e)
         {
             $request->session()->flash('status', $e->getMessage());
             return view('error');
         }
-        }
+    }
 
     
    
@@ -52,12 +54,20 @@ class ClientController extends Controller
                         
             // ]);
 
+        // --------------------------------------------------
+        $clients = Client::withTrashed()->get();
+        (count($clients)>0) ? $lastcode = $clients->last()->code_client : $lastcode = null;
+        $str = 1;
+        if(isset($lastcode))
+            $str = $lastcode+1 ;
+        $code = str_pad($str,4,"0",STR_PAD_LEFT);
+        // --------------------------------------------------
         $client = new Client();
         $client->nom_client = $request->input('name');
         $client->adresse = $request->input('adresse');
         $client->telephone = $request->input('telephone');
         $client->solde = $request->input('solde');
-        $client->code_client = $request->input('code');
+        $client->code_client = $code;
        
         $client->ICE = Str::slug($client->nom_client, '-');
         

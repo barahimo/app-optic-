@@ -76,11 +76,11 @@
         <div class="form-row">
           <div class="col-3">
             <label for="nom">Nom :</label>
-            <input type="text" class="form-control" name="libelle" id="libelle" disabled>
+            <input type="text" class="form-control" name="libelle" id="libelle" placeholder="nom de produit" disabled>
           </div>
           <div class="col-3">
             <label for="prix">prix :</label>
-            <input type="text" class="form-control" name="prix" id="prix" disabled>
+            <input type="number" class="form-control" name="prix" id="prix" value="0.00" min="0">
           </div>
           <div class="col-3">
             <label for="qte">Qté :</label>
@@ -133,7 +133,7 @@
   </div>
   <!-- End LigneCommande  -->
   <!-- Begin Reglement  -->
-  <div class="card text-left">
+  <!-- <div class="card text-left">
     <img class="card-img-top" src="holder.js/100px180/" alt="">
     <div class="card-body">
       <h4 class="card-title">Reglement :</h4>
@@ -163,6 +163,55 @@
         </div>
       </div>
     </div>
+  </div>   -->
+    <div class="card text-left">
+    <img class="card-img-top" src="holder.js/100px180/" alt="">
+    <div class="card-body">
+      <h4 class="card-title">Les règlements :</h4>
+      <div class="card-text">
+        <div class="form-row">
+          <div class="col-3">
+              <label for="mode">Date de règlement :</label>
+          </div>
+          <div class="col-3">
+            <label for="mode">Mode de règlement :</label>
+          </div>
+          <div class="col-2">
+            <label for="nom">Montant payer :</label>
+          </div>
+          <div class="col-2">
+            <label for="reste">Reste à payer :</label>
+          </div>
+          <div class="col-2">
+            <label for="status">Status :</label>
+          </div>
+        </div>
+        <div id="reglements">
+        @foreach($commande->reglements as $reglement)
+        <div class="form-row">
+          <input type="hidden" value="{{$reglement->id}}">
+          <input type="hidden" value="{{$reglement->reste}}">
+          <div class="col-3">
+            <input type="text" class="form-control" name="reg_date" placeholder="reg_date" value="{{$reglement->date}}" disabled>
+          </div>
+          <div class="col-3">
+            <input type="text" class="form-control" name="mode" placeholder="mode" value="{{$reglement->mode_reglement}}" disabled>
+          </div>
+          <div class="col-2">
+            <input type="text" class="form-control" name="avance" placeholder="avance" value="{{$reglement->avance}}" disabled>
+          </div>
+          <div class="col-2">
+            <input type="text" class="form-control" name="reste"  placeholder="reste" value="{{$reglement->reste}}" disabled>
+          </div>
+          <div class="col-2">
+            <input type="text" class="form-control" name="status"  placeholder="status" value="{{$reglement->reglement}}" disabled>
+          </div>
+        </div>
+        <br>
+        @endforeach
+        </div>
+      </div>
+    </div>
   </div>  
   <!-- End Reglement  -->
   <button class="btn btn-secondary" id="valider">Valider Les modifications</button>
@@ -185,7 +234,7 @@
         success:function(data){
           var options = '<option value="0" disabled="true" selected="true">-Product-</option>';
           for(var i=0;i<data.length;i++){
-            options+=`<option value="${data[i].id}">${data[i].nom_produit} | ${data[i].prix_produit_HT}</option>`;
+            options+=`<option value="${data[i].id}">${data[i].nom_produit} | ${data[i].prix_produit_TTC}</option>`;
           }  
           product.html("");        
           product.append(options);        
@@ -210,8 +259,8 @@
         success:function(data){
           prod_id.val(data.id) ;        
           libelle.val(data.nom_produit) ;        
-          prix.val(data.prix_produit_HT);                
-          total.val(data.prix_produit_HT);   
+          prix.val(data.prix_produit_TTC);                
+          total.val(data.prix_produit_TTC);   
           qte.val("1");
         },
         error:function(){
@@ -262,7 +311,8 @@
         qte.val("1");
         total.val(prix.val());
         somme.html(calculSomme());
-        calculReste();
+        // calculReste();
+        calculReglement();
     });
     // -----------End AddLigne--------------//
     // -----------Begin UpdateLigne--------------//
@@ -291,7 +341,8 @@
         qte.val("1");
         total.val(prix.val());
         somme.html(calculSomme());
-        calculReste();
+        // calculReste();
+        calculReglement();
     });
     // -----------End UpdateLigne--------------//
     // -----------keyup Prix--------------//
@@ -309,11 +360,20 @@
       var NAvance = parseFloat(avance.val());
       if(NAvance > calculSomme())
         avance.val(calculSomme());
-      calculReste();
+      // calculReste();
     });
     // -----------End keyup Avance--------------//
     // -----------Begin valider--------------//
     $(document).on('click','#valider',function(e){
+      // var cmd_total = calculSomme();
+      // var cmd_avance = calculAvances();
+      // var cmd_reste = calculSomme()-calculAvances();
+
+      // console.log(cmd_total);
+      // console.log(cmd_avance);
+      // console.log(cmd_reste);
+
+      // return ;
       // e.preventDefault(); //Pour ne peut refresh la page en cas de bouton submit 
       var cmd_id = <?php echo $commande->id;?>;
       var _token=$('input[name=_token]'); //Envoi des information via method POST
@@ -327,7 +387,7 @@
       // ***** BEGIN variables lignes ******** //
       var table=$('#lignes');
       var list = table.find('tbody').find('tr');
-      var array = [];
+      var array1 = [];
       for (let i = 0; i < list.length; i++) {
         var prod_id = list.eq(i).find('td').eq(0).html();
         var libelle = list.eq(i).find('td').eq(1).html();
@@ -342,14 +402,34 @@
               "total":parseFloat(total)
             };
 
-        array = [...array,obj];
+        array1 = [...array1,obj];
       }
       // ***** END variables lignes ******** //
       // ***** BEGIN variables reglements ******** //
-      var mode =$('#mode');
-      var avance= $('#avance');
-      var reste =$('#reste');
-      var status =$('#status');
+      // var mode =$('#mode');
+      // var avance= $('#avance');
+      // var reste =$('#reste');
+      // var status =$('#status');
+      // ***** BEGIN variables lignes ******** //
+      var reglements=$('#reglements');
+      var list = reglements.find('.form-row');
+      var array2 = [];
+      for (let i = 0; i < list.length; i++) {
+        var hidden = list.eq(i).find('input:hidden');
+        var n_reg_id_hidden = parseFloat(hidden.eq(0).val());
+        var row = list.eq(i).find('div');
+        var reste = row.eq(3).find('input');
+        nreste = parseFloat(reste.val());
+        var status = row.eq(4).find('input'); 
+        (nreste>0) ? txt = 'NR' : (nreste==0) ? txt = 'R' : txt = 'AV';
+        var obj = {
+              "reg_id":parseInt(n_reg_id_hidden),
+              "reste":nreste,
+              "status":txt,
+            };
+
+        array2 = [...array2,obj];
+      }
       // ***** END variables reglements ******** //
 
       $.ajax({
@@ -362,11 +442,15 @@
           gauche : parseFloat(gauche.val()),
           droite : parseFloat(droite.val()),
           _token : _token.val(),
-          lignes : array,
-          mode:mode.val(),
-          avance:parseFloat(avance.val()),
-          reste:parseFloat(reste.val()),
-          status:status.val(),
+          lignes : array1,
+          // mode:mode.val(),
+          // avance:parseFloat(avance.val()),
+          // reste:parseFloat(reste.val()),
+          // status:status.val(),
+          reglements : array2,
+          cmd_avance : calculAvances(),
+          cmd_total : calculSomme(),
+          cmd_reste : calculSomme()-calculAvances(),
         },
         success: function(data){
           Swal.fire(data.message);
@@ -404,8 +488,7 @@
     });
     // -----------END TEST--------------//
     $(document).on('click','#btest',function(){
-      ftest();
-      console.log('test');
+      calculAvances();
     });
   });
   // -----------My function--------------//
@@ -416,7 +499,8 @@
     list.eq(i).remove();
     var somme=$('#somme');
     somme.html(calculSomme());
-    calculReste();
+    // calculReste();
+    calculReglement();
   }
   function edit(id){
     var i = checkIndex(id);
@@ -494,20 +578,32 @@
     }
     return somme.toFixed(2);
   }
-  function calculReste(){
-    var avance=$("#avance");
-    var reste=$('#reste');
-    var status=$("#status");
-    var NReste = 0;
-    if(avance.val()){
-      NReste = calculSomme()-parseFloat(avance.val());
-      (NReste > 0) ? status.val("non réglée"): status.val("réglée");    
+  function calculAvances(){
+    var comp = 0;
+    var reglements=$('#reglements');
+    var list = reglements.find('.form-row');
+    for (let i = 0; i < list.length; i++) {
+      var row = list.eq(i).find('div');
+      var avance = row.eq(2).find('input');
+      var navance = parseFloat(avance.val());
+      comp += navance;
     }
-    else{
-      status.val("");
-    }
-    reste.val(NReste.toFixed(2));
+    return comp.toFixed(2);
   }
+  // function calculReste(){
+  //   var avance=$("#avance");
+  //   var reste=$('#reste');
+  //   var status=$("#status");
+  //   var NReste = 0;
+  //   if(avance.val()){
+  //     NReste = calculSomme()-parseFloat(avance.val());
+  //     (NReste > 0) ? status.val("non réglée"): status.val("réglée");    
+  //   }
+  //   else{
+  //     status.val("");
+  //   }
+  //   reste.val(NReste.toFixed(2));
+  // }
   function getLignes(){
     var cmd_id = <?php echo $commande->id;?>;
     $.ajax({
@@ -551,11 +647,33 @@
           reste.val(parseFloat(reglement.reste).toFixed(2));
           status.val(reglement.reglement);
           // -----------END Reglement--------------//
+          calculReglement();
         } ,
         error:function(err){
             Swal.fire(err);
         },
       });
+  }
+  
+  function calculReglement(){
+    var cmd_total = <?php echo $commande->totale; ?>;
+    var diff = calculSomme() - cmd_total;
+    // var diff = 100;
+    // $('#ptest').html(diff);
+    var reglements=$('#reglements');
+    var list = reglements.find('.form-row');
+    for (let i = 0; i < list.length; i++) {
+      var hidden = list.eq(i).find('input:hidden');
+      var n_reg_id_hidden = parseFloat(hidden.eq(0).val());
+      var n_reste_hidden = parseFloat(hidden.eq(1).val());
+      var row = list.eq(i).find('div');
+      var reste = row.eq(3).find('input');
+      reste.val(n_reste_hidden+diff);
+      var nreste = parseFloat(reste.val());
+      var status = row.eq(4).find('input');
+      (nreste>0) ? status.val('Non reglée'): (nreste==0) ? status.val('Reglée'): status.val('AVOIR');
+    }
+    
   }
   function ftest(){
     var p = $('#ptest');

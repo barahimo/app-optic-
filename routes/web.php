@@ -49,6 +49,7 @@ Route::get('/affiche', 'CommandeController@affiche')->name('commande.affiche');
 
 Route::post('/reglement', 'CommandeController@storeLR')->name('commande.storeLR');
 Route::get('/facturation', 'CommandeController@facture')->name('commande.facture');
+Route::get('/facturation2', 'CommandeController@facture2')->name('commande.facture2');
 
 Route::get('/prodview','CommandeController@prodfunct');
 Route::get('/findProductName','CommandeController@findProductName');
@@ -69,6 +70,7 @@ Route::get('/lignecommandedit/{lignecommande}', 'CommandeController@editL')->nam
 Route::put('/lignecommandeupdate/{lignecommande}', 'CommandeController@updateL')->name('lgcommande.updateL');
 Route::put('/affecte', 'LignecommandeController@affecte')->name('lgcommande.affecte');
 Route::post('/facture', 'CommandeController@storefacture')->name('facture.store');
+Route::post('/facture2', 'CommandeController@storefacture2')->name('facture.store2');
 // Route::get('/select', 'HomeController@select')->name('select');
 // Route::get('/selectpr', 'HomeController@selectProduit')->name('selectproduit');
 
@@ -102,4 +104,4 @@ Route::get('/getReglements','ReglementController@getReglements')->name('reglemen
 Route::get('/getReglements2','ReglementController@getReglements2')->name('reglement.getReglements2');
 Route::post('/storeReglements','ReglementController@store2')->name('reglement.store2');
 Route::post('/storeReglements3','ReglementController@store3')->name('reglement.store3');
-
+Route::get('/facture2/{facture}','FactureController@show2')->name('facture.show2');

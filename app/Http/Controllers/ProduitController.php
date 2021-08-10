@@ -45,13 +45,16 @@ class ProduitController extends Controller
                         
             ]);
    
+        $tva = $request->input('TVA');
+        $ht = $request->input('prix_produit_HT');
+        $ttc = $request->input('prix_produit_TTC');
         
-
         $produit = new Produit();
         $produit->nom_produit = $request->input('nom_produit');
         $produit->code_produit = $request->input('code_produit');
-        $produit->TVA = $request->input('TVA');
-        $produit->prix_produit_HT = $request->input('prix_produit_HT');
+        $produit->TVA = $tva;
+        $produit->prix_produit_HT = $ht ;
+        $produit->prix_produit_TTC = $ht + ($ht * $tva/100) ;
         $produit->descreption = $request->input('descreption');
         // $produit->nom_categorie =  $request->input('nom_categorie');
         $produit->categorie_id =  $request->input('nom_categorie');

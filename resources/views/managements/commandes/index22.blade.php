@@ -95,6 +95,7 @@
           // ************************ //
           var url = "{{route('commande.edit2',['id'=>":id"])}}".replace(':id', commande.id);
           var url_reg = "{{route('reglement.create3',['commande'=>"commande_id"])}}".replace('commande_id', commande.id);
+          var url_fac = "{{route('commande.facture2',['commande'=>"commande_id"])}}".replace('commande_id', commande.id);
           var facture = "NF";
           if(commande.facture == "f")
             facture = "F";
@@ -112,7 +113,7 @@
               <td>${status}</td>
               <td>${facture}</td>
               <td>
-                <button class="btn btn-link" onclick="actionButton()"><i class="fa fa-plus">&nbsp;Facture</i></button>
+                <button class="btn btn-link" onclick="window.location.assign('${url_fac}')"><i class="fa fa-plus">&nbsp;Facture</i></button>
                 &nbsp;&nbsp;
                 <button class="btn btn-link" onclick="window.location.assign('${url_reg}')"><i class="fa fa-plus">&nbsp;Règlement</i></button>
                 &nbsp;&nbsp;
