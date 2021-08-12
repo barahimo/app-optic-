@@ -53,8 +53,8 @@
             <th>Montant total</th>
             <th>Montant payer</th>
             <th>Reste à payer</th>
-            <th>Status</th>
-            <th>Facture</th>
+            <!-- <th>Status</th>
+            <th>Facture</th> -->
             <th>Actions</th>
         </tr>
         </thead>
@@ -108,7 +108,8 @@
         var commandes = data;
         commandes.forEach(commande => {
           // ************************ //
-          var url = "{{route('commande.edit2',['id'=>":id"])}}".replace(':id', commande.id);
+          var url_edit = "{{route('commande.edit2',['id'=>":id"])}}".replace(':id', commande.id);
+          var url_show = "{{route('commande.show2',['id'=>":id"])}}".replace(':id', commande.id);
           var url_reg = "{{route('reglement.create3',['commande'=>"commande_id"])}}".replace('commande_id', commande.id);
           var url_fac = "{{route('commande.facture2',['commande'=>"commande_id"])}}".replace('commande_id', commande.id);
           var facture = "NF";
@@ -118,23 +119,26 @@
           if(commande.reste > 0)
             status = "NR";
           // ************************ //
+              // <td>${commande.id}</td>
           lignes += `<tr>
-              <td>${commande.id}</td>
+              <td>${commande.code}</td>
               <td>${commande.date}</td>
               <td>${commande.nom_client}</td>
               <td>${commande.totale}</td>
               <td>${commande.avance}</td>
               <td>${commande.reste}</td>
-              <td>${status}</td>
-              <td>${facture}</td>
               <td>
                 <button class="btn btn-link" onclick="window.location.assign('${url_fac}')"><i class="fa fa-plus">&nbsp;Facture</i></button>
-                &nbsp;&nbsp;
+                &nbsp;&nbsp;<br/>
                 <button class="btn btn-link" onclick="window.location.assign('${url_reg}')"><i class="fa fa-plus">&nbsp;Règlement</i></button>
-                &nbsp;&nbsp;
-                <a class="btn btn-danger" href=${url}>Edit</a>
+                &nbsp;&nbsp;<br/>
+                <a class="btn btn-link" href=${url_edit}>Edit</a>
+                &nbsp;&nbsp;<br/>
+                <a class="btn btn-link" href=${url_show}>Show</a>
               </td>
             </tr>`;
+              // <td>${status}</td>
+              // <td>${facture}</td>
 
         });
         table.find('tbody').html("");

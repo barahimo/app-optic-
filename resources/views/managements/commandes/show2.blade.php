@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>BON n° : {{$commande->code}}</title>
     <!-- Scripts -->  
     {{-- <script src="{{ asset('js/sweetalert2.min.js') }}" defer></script> --}}
     <script src="{{asset('js/sweetalert2.min.js')}}"></script> 
@@ -44,74 +44,54 @@
                     <table class="table table-hover" border="0" style="border: 0px solid red">
                         <thead>
                             <tr>
-                                <td colspan="5" class="text-left">
+                                <td colspan="3" class="text-left">
                                     <img src="{{asset('images/logo.jpg')}}" alt="" style="width:120px">
                                 </td>
                                 <td colspan="2" class="text-left">
                                     Code client: {{$commande->client->code}} <br>  
-                                    Nom Client : {{$commande->client->nom_client}} <br>
+                                    Nom client : {{$commande->client->nom_client}} <br>
                                     Télèphone : {{$commande->client->telephone}} <br>  
                                     Adresse : {{$commande->client->adresse}} <br>  
-                                    Date facture : {{$date}} <br>   
+                                    Date : {{$commande->date}} <br>   
                                 </td>
                             </tr>
                             <tr >
-                                <th colspan="7" style="text-align:center; background-color:rgb(235, 233, 233); font-size:20px">
-                                    Facture N° : {{$code}}
+                                <th colspan="5" style="text-align:center; background-color:rgb(235, 233, 233); font-size:20px">
+                                  BON n° : {{$commande->code}}
                                 </th>
                             </tr>
                             <tr>
                                 <th style="width:10%" class="text-center border">Réf.</th>
-                                <th style="width:45%" class="text-center border">Désignation</th>
-                                <th style="width:5%" class="text-center border">Qté</th>
-                                <th style="width:10%" class="text-center border">PU. HT</th>
-                                <th style="width:5%" class="text-center border">TVA</th>
-                                <th style="width:14%" class="text-center border">MT. HT</th>
-                                <th style="width:15%" class="text-center border">MT. TTC</th>
+                                <th style="width:50%" class="text-center border">Désignation</th>
+                                <th style="width:10%" class="text-center border">Qté</th>
+                                <th style="width:15%" class="text-center border">PU</th>
+                                <th style="width:15%" class="text-center border">TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
                             @php 
                                 $TTC = 0;
-                                $HT = 0;
                             @endphp
                             @foreach($lignecommandes as $lignecommande)
                             @php 
-                                $montant_HT = $lignecommande->totale_produit / (1 + $lignecommande->produit->TVA/100);
-                                $prix_unit_HT = $montant_HT / $lignecommande->Qantite;
-                                $HT += $montant_HT;
+                                $prix_unit = $lignecommande->totale_produit / $lignecommande->Qantite;
                                 $TTC += $lignecommande->totale_produit;
                             @endphp
                             <tr>
                                 <td style="width:10%" class="text-left border">{{$lignecommande->produit->code_produit}}</td>
-                                <td style="width:45%" class="text-left border">{{$lignecommande->nom_produit}}</td>
-                                <td style="width:5%" class="text-center border">{{$lignecommande->Qantite}}</td>
-                                <td style="width:10%" class="text-right border">{{number_format($prix_unit_HT,2)}}</td>
-                                <td style="width:5%" class="text-center border">{{$lignecommande->produit->TVA}}</td>
-                                <td style="width:10%" class="text-right border">{{number_format($montant_HT,2)}}</td>
+                                <td style="width:50%" class="text-left border">{{$lignecommande->nom_produit}}</td>
+                                <td style="width:10%" class="text-center border">{{$lignecommande->Qantite}}</td>
+                                <td style="width:15%" class="text-right border">{{number_format($prix_unit,2)}}</td>
                                 <td style="width:15%" class="text-right border">{{$lignecommande->totale_produit}}</td>
                             </tr>
                             @endforeach
-                            @php 
-                            $TVA = $TTC - $HT;
-                            @endphp
                             <tr>
-                                <td colspan="4" style="border-bottom: none !important"></td>
-                                <th colspan="2" class="text-right border">Totale HT :</th>
-                                <td colspan="1" class="text-right border">{{number_format($HT,2)}} DH</td>
-                            </tr>
-                            <tr>
-                                <td colspan="4" style="border-bottom: 0px solid red"></td>
-                                <th colspan="2" class="text-right border">TVA :</th>
-                                <td colspan="1" class="text-right border">{{number_format($TVA,2)}} DH</td>
-                            </tr>
-                            <tr>
-                                <td colspan="4" style="border-bottom: none !important"></td>
-                                <th colspan="2" class="text-right border">Totale TTC :</th>
+                                <td colspan="2" style="border-bottom: none !important"></td>
+                                <th colspan="2" class="text-right border">MONTANT A PAYER :</th>
                                 <td colspan="1" class="text-right border">{{number_format($TTC,2)}} DH</td>
                             </tr>
                             <tr style="height: 10px">
-                                <td colspan="7" class="text-center" style="text-align:center; background-color:rgb(235, 233, 233)">
+                                <td colspan="5" class="text-center" style="text-align:center; background-color:rgb(235, 233, 233)">
                                     <address>
                                         Siège social : ITIC SOLUTION -3 ,immeuble Karoum, Av Alkhansaa, Cité Azmani-83350 OULED TEIMA, Maroc<br>
                                         Téléphone : 085785435457890 -https://itic-solution.com/ -Contact@itic-solution.com <br>
@@ -122,17 +102,7 @@
                         </tbody>
                     </table>
                     <div class="text-center">
-                        <form  method="POST" action="{{route('facture.store2')}}">
-                            @csrf 
-                            <input type="hidden" name="commande_id" value="{{$commande->id}}">
-                            <input type="hidden" name="date" value="{{$date}}">
-                            <input type="hidden" name="code" value="{{$code}}">
-                            <input type="hidden" name="totale_HT" value="{{$prix_HT}}">
-                            <input type="hidden"  name="totale_TVA" value="{{$TVA}}">
-                            <input type="hidden" name="totale_TTC"  value="{{$priceTotal}}" >
-                            <input type="hidden" name="reglement" value="à raception">
-                            <input type="submit" class="btn btn-info bnt-lg" value="Valider">
-                        </form>
+                        <button class="btn btn-info bnt-lg"  onclick="window.print()">Imprimer</button>
                     </div>
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     <hr>
@@ -140,5 +110,12 @@
             </div>
         </div>
     </div>
+    <script type="application/javascript">
+      test();
+      function test(){
+        // console.log('test : '+$('input').eq(1).val());
+        // console.log('test : '+$('input').eq(2).val());
+      }
+    </script>
 </body>
 </html>

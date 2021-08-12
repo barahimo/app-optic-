@@ -368,6 +368,7 @@
           total:calculSomme(),
         },
         success: function(data){
+          // console.log(data);
           Swal.fire(data.message);
           if(data.status == "success"){
             setTimeout(() => {

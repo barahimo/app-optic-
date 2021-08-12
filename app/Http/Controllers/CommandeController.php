@@ -654,16 +654,6 @@ class CommandeController extends Controller
 	}
 
     public function store2(Request $request){ 
-        // -----------------------------------------------------
-        $commandes = Commande::get();
-        (count($commandes)>0) ? $lastcode = $commandes->last()->code : $lastcode = null;
-        $str = 1;
-        if(isset($lastcode))
-            $str = $lastcode+1 ;
-        $code = str_pad($str,4,"0",STR_PAD_LEFT);
-        echo $code;
-        return ;
-        // -----------------------------------------------------
         $lignes = $request->input('lignes');
         if(!empty($lignes)){
             $date = $request->input('date');
@@ -674,7 +664,24 @@ class CommandeController extends Controller
             $avance = $request->input('avance');
             $reste = $request->input('reste');
             $status = $request->input('status');
-
+            // -----------------------------------------------------
+            $time = strtotime($date);
+            $year = date('y',$time);
+            $month = date('m',$time);
+            // -----------------------------------------------------
+            $commandes = Commande::get();
+            (count($commandes)>0) ? $lastcode = $commandes->last()->code : $lastcode = null;
+            $str = 1;
+            if(isset($lastcode)){
+                // ----- 2108-0001 ----- //
+                $list = explode("-",$lastcode);
+                $y = substr($list[0],0,2);
+                $n = $list[1];
+                ($y == $year) ? $str = $n+1 : $str = 1;
+            } 
+            $pad = str_pad($str,4,"0",STR_PAD_LEFT);
+            $code = $year.''.$month.'-'.$pad;
+            // -----------------------------------------------------
             if(!empty($date) && !empty($client) && !empty($gauche) && !empty($droite)){
                 // ------------ Begin Commande -------- //
                 $commande = new Commande();
@@ -687,6 +694,7 @@ class CommandeController extends Controller
                 $commande->avance = $avance;
                 $commande->reste = $reste;
                 $commande->totale = $total;
+                $commande->code = $code;
                 $commande->save();
                 // ------------ End Commande -------- //
                 if($commande->id){
@@ -899,5 +907,32 @@ class CommandeController extends Controller
             "status" => $msg
         ]); 
     }
-    
+
+    public function show2($cmd_id){
+        $commande = Commande::with('client')->find($cmd_id);
+        $lignecommandes = Lignecommande::with('produit')->where('commande_id', '=', $cmd_id)->get();
+        // return $lignecommandes;
+        $prix_HT = 0;
+        foreach($lignecommandes as $ligne){
+            $prix_HT = $prix_HT +  ($ligne->produit->prix_produit_HT * $ligne->Qantite);
+            $ligne->nom_produit = $ligne->produit->nom_produit;  
+        }
+        $TVA = 0;
+        foreach($lignecommandes as $ligne){
+            $TVA = $TVA +  ($ligne->produit->prix_produit_HT * $ligne->Qantite * $ligne->produit->TVA) ;
+        }
+        $priceTotal = 0;
+        foreach($lignecommandes as $ligne){
+            $priceTotal =  floatval($priceTotal  + $ligne->totale_produit) ;
+        }
+        return view('managements.commandes.show2', [
+            'cmd_id' =>  $cmd_id, 
+            'commande' =>  $commande, 
+            'lignecommandes' =>  $lignecommandes,
+            'priceTotal'  => $priceTotal,
+            'prix_HT' => $prix_HT,
+            'TVA' => $TVA,
+        ]);
+    }
+//-------------------
 }

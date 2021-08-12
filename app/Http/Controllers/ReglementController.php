@@ -269,13 +269,18 @@ class ReglementController extends Controller
         return view('managements.réglements.create3',compact('commande','date'));
     }
 
+    // Enregistrer plusieurs reglements
     public function store2(Request $request){ 
         $lignes = $request->input('lignes');
         if(!empty($lignes)){
             $date = $request->input('date');
             $client = $request->input('client');
             $mode = $request->input('mode');
-
+            // -----------------------------------------------------
+            $time = strtotime($date);
+            $year = date('y',$time);
+            $month = date('m',$time);
+            // -----------------------------------------------------
             if(!empty($date) && !empty($client)){
                 // ------------ Begin reglement -------- //
                 foreach ($lignes as $ligne) {
@@ -286,6 +291,21 @@ class ReglementController extends Controller
                     $reglement->avance = $ligne['avance'];
                     $reglement->reste = $ligne['reste'];
                     $reglement->reglement = $ligne['status'];
+                    // -----------------------------------------------------
+                    $reglements = Reglement::get();
+                    (count($reglements)>0) ? $lastcode = $reglements->last()->code : $lastcode = null;
+                    $str = 1;
+                    if(isset($lastcode)){
+                        // ----- 2108-0001 ----- //
+                        $list = explode("-",$lastcode);
+                        $y = substr($list[0],0,2);
+                        $n = $list[1];
+                        ($y == $year) ? $str = $n+1 : $str = 1;
+                    } 
+                    $pad = str_pad($str,4,"0",STR_PAD_LEFT);
+                    $code = $year.''.$month.'-'.$pad;
+                    // -----------------------------------------------------
+                    $reglement->code = $code;
                     $reglement->commande_id = $ligne['cmd_id'];
                     $reglement->save();
                     
@@ -307,11 +327,30 @@ class ReglementController extends Controller
         return ['status'=>"success",'message'=>"Le reglement a été bien enregistrée !!"];
     }
 
+    // enregistrer une seule reglement
     public function store3(Request $request){ 
         $lignes = $request->input('lignes');
         if(!empty($lignes)){
             $date = $request->input('date');
             $mode = $request->input('mode');
+            // -----------------------------------------------------
+            $time = strtotime($date);
+            $year = date('y',$time);
+            $month = date('m',$time);
+            // -----------------------------------------------------
+            $reglements = Reglement::get();
+            (count($reglements)>0) ? $lastcode = $reglements->last()->code : $lastcode = null;
+            $str = 1;
+            if(isset($lastcode)){
+                // ----- 2108-0001 ----- //
+                $list = explode("-",$lastcode);
+                $y = substr($list[0],0,2);
+                $n = $list[1];
+                ($y == $year) ? $str = $n+1 : $str = 1;
+            } 
+            $pad = str_pad($str,4,"0",STR_PAD_LEFT);
+            $code = $year.''.$month.'-'.$pad;
+            // -----------------------------------------------------
             if(!empty($date)){
                 // ------------ Begin reglement -------- //
                 foreach ($lignes as $ligne) {
@@ -322,6 +361,7 @@ class ReglementController extends Controller
                     $reglement->avance = $ligne['avance'];
                     $reglement->reste = $ligne['reste'];
                     $reglement->reglement = $ligne['status'];
+                    $reglement->code = $code;
                     $reglement->commande_id = $ligne['cmd_id'];
                     $reglement->save();
                     
@@ -341,6 +381,14 @@ class ReglementController extends Controller
         }
     
         return ['status'=>"success",'message'=>"Le règlement a été bien enregistrée !!"];
+    }
+
+    public function show2($reg_id){
+        $reglement = Reglement::with(['commande' => function($query){$query->with('client');}])->find($reg_id);
+        // return $reglement;
+        return view('managements.réglements.show2', [
+            'reglement' => $reglement
+        ]);
     }
 
     public function avoir(Request $request){ 

@@ -119,7 +119,7 @@
               var style = "";
               var btnAvoir = reglement.reglement;
               (reglement.reste > 0) ? style = "color : red" : style = "color : green";
-              if(reglement.reglement == 'AV')
+              if(reglement.reglement == 'AV'){
                 btnAvoir = `<button  
                     onclick="avoir({
                                     reg_id: ${reglement.id}, 
@@ -130,6 +130,9 @@
                                     cmd_reste: ${ligne.reste}
                                   })"
                     class="btn btn-outline-success">Avoir</button>`;
+              }
+              var url_show = "{{route('reglement.show2',['id'=>":id"])}}".replace(':id', reglement.id);
+              var btnPrint = `<a class="btn btn-outline-info" href=${url_show}>Print</a>`;
               if(reglement.avance != 0) 
                 details+=`<tr  style="${style}">
                       <td>${reglement.id}</td>
@@ -140,6 +143,7 @@
                       <td>${reglement.reste}</td>
                       <td>${reglement.date}</td>
                       <td class="text-center">${btnAvoir}</td>
+                      <td class="text-center">${btnPrint}</td>
                     </tr>`;
             }) ;
             // ------ end reglements ------
@@ -172,6 +176,7 @@
                                   <th>Reste</th>
                                   <th>Date</th>
                                   <th>Status</th>
+                                  <th>Actions</th>
                                 </tr>
                               </thead>
                               <tbody>${details}</tbody>
