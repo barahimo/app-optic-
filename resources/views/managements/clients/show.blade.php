@@ -57,7 +57,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <label for="name"><strong><strong>Code client:</strong></strong></label>
-                        {{$client->code_client}}
+                        {{$client->code}}
                     </div>
 
                     <div class="col-md-4">

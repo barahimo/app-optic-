@@ -525,6 +525,20 @@ class CommandeController extends Controller
         ]);
     }
 
+    public function index222(Request $request){
+        $commandes = Commande::get();
+        $lignecommandes = Lignecommande::get();
+        $reglements = reglement::get();
+        $clients = Client::get();
+        return view('managements.commandes.index222', [
+            'commandes'=>$commandes,
+            'lignecommandes'=>$lignecommandes,
+            'reglements'=>$reglements,
+            'clients' =>$clients,
+        ]);
+    }
+
+    //get commandes pour la page commande
     public function getCommandes(Request $request){
         $search = $request->search;
         $client = $request->client;
@@ -551,6 +565,73 @@ class CommandeController extends Controller
         ]);
     }
 
+    //get commandes v2 pour la page commande
+    public function getCommandes2(Request $request){
+        // ------------------------------------
+        $facture = $request->facture;//f - nf - all - null
+        $status = $request->status;//r - nr - all - null
+        $client = $request->client;
+        // ------------------------------------
+        $r = Commande::where('reste','<=',0);
+        $nr = Commande::where('reste','>',0);
+        $f = Commande::where('facture','f');
+        $nf = Commande::where('facture','nf');
+        $fr = Commande::where('facture','f')->where('reste','<=',0);
+        $fnr = Commande::where('facture','f')->where('reste','>',0);
+        $nfr = Commande::where('facture','nf')->where('reste','<=',0);
+        $nfnr = Commande::where('facture','nf')->where('reste','>',0);
+        if($client){
+            if(!$facture && !$status)  //echo '[]';
+                $commandes = [];
+            else if((!$facture && $status=='r') || ($facture=='all' && $status=='r'))  //echo 'r';
+                $commandes = $r->where('client_id',$client)->get();
+            else if((!$facture && $status=='nr') || ($facture=='all' && $status=='nr'))  //echo 'nr';
+                $commandes = $nr->where('client_id',$client)->get();
+            else if((!$facture && $status=='all') || ($facture=='all' && !$status) || ($facture=='all' && $status=='all')) //echo 'all';
+                $commandes = Commande::where('client_id',$client)->get();
+            else if(($facture=='f' && !$status) || ($facture=='f' && $status=='all')) //echo 'f';
+                $commandes = $f->where('client_id',$client)->get();
+            else if($facture=='f' && $status=='r') //echo 'fr';
+                $commandes = $fr->where('client_id',$client)->get();
+            else if($facture=='f' && $status=='nr') //echo 'fnr';
+                $commandes = $fnr->where('client_id',$client)->get();
+            else if(($facture=='nf' && !$status) || ($facture=='nf' && $status=='all')) //echo 'nf';
+                $commandes = $nf->where('client_id',$client)->get();
+            else if($facture==' nf' && $status=='r') //echo 'nfr';
+                $commandes = $nfr->where('client_id',$client)->get();
+            else if($facture=='nf' && $status=='nr') //echo 'nfnr';
+                $commandes = $nfnr->where('client_id',$client)->get();
+            else //echo '[]';
+                $commandes = [];
+        }
+        else{
+            if(!$facture && !$status)  //echo '[]';
+                $commandes = [];
+            else if((!$facture && $status=='r') || ($facture=='all' && $status=='r'))  //echo 'r';
+                $commandes = $r->get();
+            else if((!$facture && $status=='nr') || ($facture=='all' && $status=='nr'))  //echo 'nr';
+                $commandes = $nr->get();
+            else if((!$facture && $status=='all') || ($facture=='all' && !$status) || ($facture=='all' && $status=='all')) //echo 'all';
+                $commandes = Commande::get();
+            else if(($facture=='f' && !$status) || ($facture=='f' && $status=='all')) //echo 'f';
+                $commandes = $f->get();
+            else if($facture=='f' && $status=='r') //echo 'fr';
+                $commandes = $fr->get();
+            else if($facture=='f' && $status=='nr') //echo 'fnr';
+                $commandes = $fnr->get();
+            else if(($facture=='nf' && !$status) || ($facture=='nf' && $status=='all')) //echo 'nf';
+                $commandes = $nf->get();
+            else if($facture==' nf' && $status=='r') //echo 'nfr';
+                $commandes = $nfr->get();
+            else if($facture=='nf' && $status=='nr') //echo 'nfnr';
+                $commandes = $nfnr->get();
+            else //echo '[]';
+                $commandes = [];
+        }
+        // ------------------------------------
+        return response()->json($commandes);
+    }
+
     public function index2(Request $request){
         $date = Carbon::now();
         $categories=Categorie::all();//get data from table
@@ -573,6 +654,16 @@ class CommandeController extends Controller
 	}
 
     public function store2(Request $request){ 
+        // -----------------------------------------------------
+        $commandes = Commande::get();
+        (count($commandes)>0) ? $lastcode = $commandes->last()->code : $lastcode = null;
+        $str = 1;
+        if(isset($lastcode))
+            $str = $lastcode+1 ;
+        $code = str_pad($str,4,"0",STR_PAD_LEFT);
+        echo $code;
+        return ;
+        // -----------------------------------------------------
         $lignes = $request->input('lignes');
         if(!empty($lignes)){
             $date = $request->input('date');

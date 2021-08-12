@@ -230,6 +230,23 @@ class ReglementController extends Controller
         return response()->json($commandes);
     }
 
+    public function getReglements3(Request $request){
+        $client = $request->client;
+        if($client){
+            $nom_client = Client::find($client)->nom_client;
+            $commandes = Commande::with('reglements')
+                        ->where('reste', '>', 0)
+                        ->where('nom_client',$nom_client)
+                        ->get();
+        }
+        else{
+            $commandes = Commande::with('reglements')
+                        ->where('reste', '>', 0)
+                        ->get();
+        }
+        return response()->json($commandes);
+    }
+    //regler plusieurs commandes 
     public function create2(Request $request){
         $clients = Client::get();
         $client = $request->client;
@@ -244,6 +261,7 @@ class ReglementController extends Controller
         return view('managements.réglements.create2',compact('clients','client','commandes','date'));
     }
 
+    //Regler une seule commande
     public function create3(Request $request){
         $commande_id = $request->commande;
         $date = Carbon::now();
@@ -324,4 +342,28 @@ class ReglementController extends Controller
     
         return ['status'=>"success",'message'=>"Le règlement a été bien enregistrée !!"];
     }
+
+    public function avoir(Request $request){ 
+        $data = $request->input('obj');
+
+        $reg_id = $data['reg_id']; 
+        $reg_avance = $data['reg_avance'];
+        $reg_reste = $data['reg_reste'];
+        $cmd_id = $data['cmd_id'];
+        $cmd_avance = $data['cmd_avance'];
+        $cmd_reste = $data['cmd_reste'];
+
+        $reglement = Reglement::find($reg_id);
+        $reglement->avance = $reg_avance + $reg_reste;
+        $reglement->reste = $reg_reste - $reg_reste;
+        $reglement->reglement = 'R';
+        $reglement->save();
+        $commande = Commande::find($cmd_id);
+        $commande->avance = $cmd_avance + $reg_reste;
+        $commande->reste = $cmd_reste - $reg_reste;;
+        $commande->save();
+
+        return ['status'=>"success",'message'=>"Opération effectuée avec succés !!!"];
+    }
+
 }

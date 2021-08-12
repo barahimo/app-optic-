@@ -488,7 +488,14 @@
     });
     // -----------END TEST--------------//
     $(document).on('click','#btest',function(){
-      calculAvances();
+      n = -100;
+      b = 100;
+      if(-n == b)
+        console.log("ok");
+      else 
+        console.log("ko");
+
+      console.log(n);
     });
   });
   // -----------My function--------------//
@@ -668,7 +675,13 @@
       var n_reste_hidden = parseFloat(hidden.eq(1).val());
       var row = list.eq(i).find('div');
       var reste = row.eq(3).find('input');
-      reste.val(n_reste_hidden+diff);
+      // -----------------------------------
+      var avance = row.eq(2).find('input');
+      var navance = parseFloat(avance.val());
+      var n = n_reste_hidden+diff;
+      (-n <= navance) ? reste.val(n): reste.val(-navance);
+      // -----------------------------------
+      // reste.val(n_reste_hidden+diff);
       var nreste = parseFloat(reste.val());
       var status = row.eq(4).find('input');
       (nreste>0) ? status.val('Non reglée'): (nreste==0) ? status.val('Reglée'): status.val('AVOIR');

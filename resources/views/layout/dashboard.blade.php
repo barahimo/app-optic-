@@ -215,7 +215,7 @@
                 <!-- Commande2 -->
                 <!-- La liste des Commandes -->
                 <li>   
-                    <a href="{{ route('commande.index22')}}">
+                    <a href="{{ route('commande.index222')}}">
                         <span ><i class="fab fa-shopify"></i></span>
                         <span>Commandes</span>
                     </a>

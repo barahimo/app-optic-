@@ -140,9 +140,12 @@
     $(document).on('change','#client',function(){
       $client = $(this).val();
       if($client == "")
-        getReglements();
+        // getReglements();
+        getReglements3();
       else
-        getReglements($client);
+        // getReglements($client);
+        getReglements3($client);
+      // --------------
     });
     // -----------End Select_Client--------------//
     // -----------keyup Avance--------------//
@@ -161,6 +164,9 @@
     // -----------End keyup Avance--------------//
     // -----------Begin valider--------------//
     $(document).on('click','#valider',function(e){
+      if(client.val() == "") 
+        Swal.fire("Veuillez choisir un client");
+      var client_id = parseInt(client.val());
       var _token=$('input[name=_token]'); //Envoi des information via method POST
       // ***** BEGIN variables lignes ******** //
       var list = tbody.find('tr');
@@ -189,7 +195,7 @@
           _token : _token.val(),
           date : date.val(),
           mode:mode.val(),
-          client : parseInt(client.val()),
+          client : client_id,
           lignes : array,
         },
         success: function(data){
@@ -213,12 +219,12 @@
     // -----------End valider--------------//
   });
   // -----------My function--------------//
-  test();
   calculs();
   // --------------
   getTfoot();
-  function test(){
-  }
+  // --------------
+  // test();
+  function test(){}
   function search(){ }
   function sommeTotal(){
     var list = tbody.find('tr');
@@ -270,6 +276,7 @@
     }
     return nreste;
   }
+  // Permet de calculer Le total des restes
   function calculs(){
     var sreste = sommeReste();
     var res = sreste-parseFloat(avance.val());
@@ -384,6 +391,65 @@
                     </tr>`;
           });
           table.find('tbody').append(lignes);
+      },
+      error:function(){
+        console.log([]);    
+      }
+    });
+  }
+  function getReglements3(param){
+    $.ajax({
+      type:'get',
+      url:'{!!URL::to('getReglements3')!!}',
+      data:{'client':param},
+      success:function(data){
+          var table = $('#table');
+          table.find('tbody').html("");
+          var lignes = '';
+          data.forEach(ligne => {
+            lignes+=`<tr>
+                      <td>${ligne.id}</td>
+                      <td>${ligne.date}</td>
+                      <td>Cmd_${ligne.id}</td>
+                      <td>${ligne.nom_client}</td>
+                      <td>${ligne.totale}</td>
+                      <td>${ligne.avance}</td>
+                      <td>${ligne.reste}</td>
+                      <td>
+                        <input type="number" min="0" style="width: 50%" value="0.00" onclick="setAvances(${ligne.id})" onkeyup="setAvances(${ligne.id})">
+                      </td>
+                      <td>${ligne.reste}</td>
+                      <td>NR</td>
+                    </tr>`;
+          });
+          table.find('tbody').append(lignes);
+          // ------------------------------------------------
+          // table.find('tfoot').html("");
+          // totale = 0;
+          // avance = 0;
+          // reste = 0;
+          // data.forEach(ligne => {
+          //   totale += parseFloat(ligne.totale);
+          //   avance += parseFloat(ligne.avance);
+          //   reste += parseFloat(ligne.reste);
+          // });
+          // var ligne = '';
+          // ligne+=`<tr>
+          //           <th></th>
+          //           <th></th>
+          //           <th></th>
+          //           <th></th>
+          //           <th>${totale.toFixed(2)}</th>
+          //           <th>${avance.toFixed(2)}</th>
+          //           <th>${reste.toFixed(2)}</th>
+          //           <th></th>
+          //           <th></th>
+          //           <th></th>
+          //         </tr>`;
+          // table.find('tfoot').append(ligne);
+          // ------------------------------------------------
+          calculs();
+          getTfoot();
       },
       error:function(){
         console.log([]);    

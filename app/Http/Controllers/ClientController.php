@@ -50,13 +50,13 @@ class ClientController extends Controller
             //     'telephone' => 'required',
             //     'adresse' => 'required' ,
             //     'solde' => 'required',
-            //     'code_client' => 'required|min:4|max:100' 
+            //     'code' => 'required|min:4|max:100' 
                         
             // ]);
 
         // --------------------------------------------------
         $clients = Client::withTrashed()->get();
-        (count($clients)>0) ? $lastcode = $clients->last()->code_client : $lastcode = null;
+        (count($clients)>0) ? $lastcode = $clients->last()->code : $lastcode = null;
         $str = 1;
         if(isset($lastcode))
             $str = $lastcode+1 ;
@@ -67,7 +67,7 @@ class ClientController extends Controller
         $client->adresse = $request->input('adresse');
         $client->telephone = $request->input('telephone');
         $client->solde = $request->input('solde');
-        $client->code_client = $code;
+        $client->code = $code;
        
         $client->ICE = Str::slug($client->nom_client, '-');
         
@@ -84,7 +84,7 @@ class ClientController extends Controller
           $q = $request->input('q');
 
        $clients =  Client::where('nom_client', 'like', "%$q%")
-           ->orWhere('code_client', 'like', "%$q%")
+           ->orWhere('code', 'like', "%$q%")
            ->paginate(5);
 
            return view('managements.clients.search')->with('clients', $clients);  
@@ -118,7 +118,7 @@ class ClientController extends Controller
     {
         // $this->validate($request, [
 
-        //     'code_client' => 'required|min:4|max:100',     
+        //     'code' => 'required|min:4|max:100',     
         //     'nom_client' => 'required',
         //     'telephone' => 'required',
         //     'adresse' => 'required',
@@ -130,9 +130,9 @@ class ClientController extends Controller
         $client->adresse = $request->input('adresse');
         $client->telephone = $request->input('telephone');
         $client->solde = $request->input('solde');
-        $client->code_client = $request->input('code');
+        $client->code = $request->input('code');
        
-        $client->ICE = Str::slug($client->code_client, '-');
+        $client->ICE = Str::slug($client->code, '-');
     
         $client->save();
 

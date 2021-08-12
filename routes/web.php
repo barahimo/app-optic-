@@ -88,6 +88,10 @@ Route::get('/commandes', 'CommandeController@index2')->name('commande.index2');
 Route::get('/getCommandes', 'CommandeController@getCommandes')->name('commande.getCommandes');
 Route::get('/commande22', 'CommandeController@index22')->name('commande.index22');
 Route::get('/gestioncommande', 'CommandeController@index22')->name('commande.index22');
+// ----------------------------------------
+Route::get('/gestioncommande2', 'CommandeController@index222')->name('commande.index222');
+Route::get('/getCommandes2', 'CommandeController@getCommandes2')->name('commande.getCommandes2');
+// ----------------------------------------
 Route::get('/productsCategory','CommandeController@productsCategory');
 Route::get('/infosProducts','CommandeController@infosProducts');
 Route::post('/storeCommande','CommandeController@store2')->name('commande.store2');
@@ -102,6 +106,8 @@ Route::get('/reglements/create2','ReglementController@create2')->name('reglement
 Route::get('/reglements/create3','ReglementController@create3')->name('reglement.create3');
 Route::get('/getReglements','ReglementController@getReglements')->name('reglement.getReglements');
 Route::get('/getReglements2','ReglementController@getReglements2')->name('reglement.getReglements2');
+Route::get('/getReglements3','ReglementController@getReglements3')->name('reglement.getReglements3');
 Route::post('/storeReglements','ReglementController@store2')->name('reglement.store2');
 Route::post('/storeReglements3','ReglementController@store3')->name('reglement.store3');
 Route::get('/facture2/{facture}','FactureController@show2')->name('facture.show2');
+Route::post('/avoir','ReglementController@avoir')->name('reglement.avoir');

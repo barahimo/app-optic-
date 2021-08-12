@@ -72,7 +72,7 @@
                         @foreach($clients as $client)
                           <tr>
                             <td>{{++$i}}</td>
-                            <td>{{$client->code_client}}</td>
+                            <td>{{$client->code}}</td>
                               <td>{{$client->nom_client}}</td>
                               <td>{{$client->adresse}}</td>
                               <td>{{$client->telephone}}</td>

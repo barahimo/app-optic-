@@ -9,7 +9,7 @@ class Commande extends Model
 {
     // use SoftDeletes;
     
-    protected $fillable = ["cadre","avance","reste","solde"];
+    // protected $fillable = ["cadre","avance","reste","solde"];
 
     public function client() 
     {
