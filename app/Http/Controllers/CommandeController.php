@@ -925,7 +925,8 @@ class CommandeController extends Controller
         foreach($lignecommandes as $ligne){
             $priceTotal =  floatval($priceTotal  + $ligne->totale_produit) ;
         }
-        return view('managements.commandes.show2', [
+        // return view('managements.commandes.show2', [
+        return view('managements.commandes.view1', [
             'cmd_id' =>  $cmd_id, 
             'commande' =>  $commande, 
             'lignecommandes' =>  $lignecommandes,

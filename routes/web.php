@@ -114,3 +114,7 @@ Route::post('/avoir','ReglementController@avoir')->name('reglement.avoir');
 
 Route::get('/showCommande/{id}','CommandeController@show2')->name('commande.show2');
 Route::get('/showReglement/{id}','ReglementController@show2')->name('reglement.show2');
+
+Route::get('/printReglement','ReglementController@createPDF')->name('reglement.createPDF');
+Route::get('pdf/preview','ReglementController@preview')->name('pdf.preview');
+Route::get('pdf/generate/{id}','ReglementController@generatePDF')->name('pdf.generate');

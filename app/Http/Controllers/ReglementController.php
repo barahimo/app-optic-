@@ -7,6 +7,7 @@ use App\Commande;
 use App\Reglement;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use PDF;
 
 class ReglementController extends Controller
 {
@@ -386,7 +387,10 @@ class ReglementController extends Controller
     public function show2($reg_id){
         $reglement = Reglement::with(['commande' => function($query){$query->with('client');}])->find($reg_id);
         // return $reglement;
-        return view('managements.réglements.show2', [
+        // return view('managements.réglements.show2', [
+        //     'reglement' => $reglement
+        // ]);
+        return view('managements.réglements.view1', [
             'reglement' => $reglement
         ]);
     }
@@ -414,4 +418,55 @@ class ReglementController extends Controller
         return ['status'=>"success",'message'=>"Opération effectuée avec succés !!!"];
     }
 
+    // Generate PDF
+    public function createPDF() {
+        // retreive all records from db
+        $data = Reglement::all();
+        // $data = ["a","b","c"];
+        // $data = [];
+        // return $data;
+        // share data to view
+        view()->share('reglement',$data);
+        // $pdf = PDF::loadView('pdf_view', $data);
+        // $pdf = PDF::loadView('managements.réglements.view', $data);
+        $pdf = PDF::loadView('managements.réglements.view2');
+        // download PDF file with download method
+        return $pdf->download('pdf_file.pdf');
+    }
+    public function preview()
+    {
+        $data = array("a","b","c");
+        // $data = "aa";
+        // $data = [];
+        // return $data;
+        // $data = Reglement::all();
+        view()->share('reglement',json_encode($data));
+        return view('managements.réglements.view2');
+        // return view('preview');
+        // $pdf = PDF::loadView('managements.réglements.view');    
+        // return $pdf->download('demo.pdf');
+    }
+    // public function generatePDF()
+    // {
+    //     // $pdf = PDF::loadView('preview');    
+    //     $pdf = PDF::loadView('managements.réglements.view2');    
+    //     return $pdf->download('demo.pdf');
+    // }
+    public function generatePDF($reg_id)
+    {
+        $reglement = Reglement::with(['commande' => function($query){$query->with('client');}])->find($reg_id);
+        // return $reglement;
+        view()->share(['reglement'=>$reglement]);
+        //Preview
+        // return view('managements.réglements.view0');
+        // download PDF file
+        PDF::setOptions(['dpi' => 150, 'defaultFont' => 'sans-serif']);
+        $pdf = PDF::loadView('managements.réglements.view0')->setPaper('A5', 'landscape');
+        // PDF::loadHTML($html)->setPaper('a4', 'landscape')->setWarnings(false)->save('myfile.pdf');
+        // ->setWarnings(false)
+        // ->save('ALUMNI-LIST-AS-OF-'. Carbon::now()
+        // ->format('d-M-Y') .'.pdf');
+        return $pdf->download('demo.pdf');
+    }
+// ----------------------------
 }

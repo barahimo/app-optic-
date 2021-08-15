@@ -53,8 +53,8 @@
             <th>Montant total</th>
             <th>Montant payer</th>
             <th>Reste à payer</th>
-            <!-- <th>Status</th>
-            <th>Facture</th> -->
+            <th>Status</th>
+            <th>Facture</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -127,6 +127,8 @@
               <td>${commande.totale}</td>
               <td>${commande.avance}</td>
               <td>${commande.reste}</td>
+              <td>${status}</td>
+              <td>${facture}</td>
               <td>
                 <button class="btn btn-link" onclick="window.location.assign('${url_fac}')"><i class="fa fa-plus">&nbsp;Facture</i></button>
                 &nbsp;&nbsp;<br/>
@@ -137,8 +139,6 @@
                 <a class="btn btn-link" href=${url_show}>Show</a>
               </td>
             </tr>`;
-              // <td>${status}</td>
-              // <td>${facture}</td>
 
         });
         table.find('tbody').html("");

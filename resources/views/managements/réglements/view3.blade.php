@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>REG n° : {{$reglement->code}}</title>
+    <title>REG n° : $reglement->code</title>
     <!-- Scripts -->  
     {{-- <script src="{{ asset('js/sweetalert2.min.js') }}" defer></script> --}}
     <script src="{{asset('js/sweetalert2.min.js')}}"></script> 
@@ -52,15 +52,15 @@
                                 <th style="width:20%"></th>
                                 <th style="width:60%" class="text-center" colspan="4">
                                     <span style="background-color:yellow">
-                                        Reçu n° : REG-{{$reglement->code}}
+                                        Reçu n° : REG-$reglement->code
                                     </span>
                                 </th>
                                 <th  style="width:20%" class="text-right">
-                                    @php
+                                    <!-- @php
+                                    @endphp -->
                                     $time = strtotime($reglement->date);
                                     $date = date('d/m/Y',$time);
-                                    @endphp
-                                    Le, {{$date}}
+                                    Le, $date
                                 </th>
                             </tr>
                             <tr><td colspan="6"></td></tr>
@@ -68,37 +68,39 @@
                         <tbody>
                             <tr>
                                 <td rowspan="3" style="width:10%">
-                                    <img src="{{asset('images/logo.jpg')}}" alt="" style="width:120px">
+                                    <!-- <img src="{{asset('images/logo.jpg')}}" alt="" style="width:120px"> -->
                                 </td>
                                 <td style="width:15%" class="text-right border">Client:</td>
-                                <td style="width:25%" class="text-left border">{{$reglement->commande->client->code}} | {{$reglement->commande->client->nom_client}}</td>
+                                <td style="width:25%" class="text-left border">
+                                    $reglement->commande->client->code | $reglement->commande->client->nom_client
+                                    </td>
                                 <td style="width:5%"></td>
                                 <td style="width:15%" class="text-right border">Commande :</td>
                                 <td style="width:30%" class="text-left border">
-                                        BON-{{$reglement->commande->code}} | 
+                                        BON-$reglement->commande->code | 
                                         <span style="background-color:yellow">
-                                        Total à payer : {{$reglement->commande->totale}} dh
+                                        Total à payer : $reglement->commande->totale dh
                                         </span>
                                 </td>
                             </tr>
                             <tr>
                                 <!-- <td style="width:10%" class="text-right border"></td> -->
                                 <td style="width:15%" class="text-right border">Adresse : </td>
-                                <td style="width:25%" class="text-left border">{{$reglement->commande->client->adresse}}</td>
+                                <td style="width:25%" class="text-left border">$reglement->commande->client->adresse</td>
                                 <td style="width:5%"></td>
                                 <td style="width:15%" class="text-right border">Total des règlements : </td>
                                 @php
-                                $total_reg = $reglement->commande->totale - $reglement->reste;
                                 @endphp
-                                <td style="width:30%" class="text-left border">{{number_format($total_reg, 2, '.', '')}} dh</td>
+                                $total_reg = $reglement->commande->totale - $reglement->reste;
+                                <td style="width:30%" class="text-left border">number_format($total_reg, 2, '.', '') dh</td>
                             </tr>
                             <tr>
                                 <!-- <td style="width:10%" class="text-right border"></td> -->
                                 <td style="width:15%" class="text-right border">Montant réglé :</td>
-                                <td style="width:25%" class="text-left border">{{$reglement->avance}} dh</td>
+                                <td style="width:25%" class="text-left border">$reglement->avance dh</td>
                                 <td style="width:5%"></td>
                                 <td style="width:15%" class="text-right border">Reste à payer : </td>
-                                <td style="width:30%" class="text-left border">{{$reglement->reste}} dh</td>
+                                <td style="width:30%" class="text-left border">$reglement->reste dh</td>
                             </tr>
                         </tbody>
                         <tfoot>

@@ -184,7 +184,8 @@ class FactureController extends Controller
         foreach($lignecommandes as $p){
             $priceTotal = floatval($priceTotal  + $p->totale_produit) ;
         }
-        return view('managements.factures.show2', [
+        // return view('managements.factures.show2', [
+        return view('managements.factures.view1', [
             'lignecommandes' =>  $lignecommandes,
              'priceTotal'  => $priceTotal,
              'prix_HT' => $prix_HT,
