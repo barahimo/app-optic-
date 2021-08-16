@@ -186,7 +186,7 @@
         <div class="sidebar-header">
          <h3 class="brand">
             <span class="ti-unlink"></span>
-            <span>Gestion-Optic </span>
+            <span>Gestion-Optic</span>
          </h3>
          <label for="sidebar-toggle" class="ti-menu-alt"></label>
            
@@ -251,7 +251,7 @@
 
     <div class="main-content">
         
-        <main id="hadi"  class="py-4">
+        <main id="hadi" class="py-4">
             {{-- <div class="dash-image">
             <img class="image" src="https://krys-krys-storage.omn.proximis.com/Imagestorage/images/2560/1600/602a299825ad8_Header_G_n_rique_Optique_v2.jpg" >
             </div> --}}

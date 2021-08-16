@@ -148,9 +148,12 @@
                                         <tr style="height:30px"></tr>
                                         <tr style="height: 10px">
                                             <td colspan="7" class="text-center" style="text-align:center; background-color:rgb(235, 233, 233)">
-                                                Siège social : ITIC SOLUTION -3 ,immeuble Karoum, Av Alkhansaa, Cité Azmani-83350 OULED TEIMA, Maroc<br>
+                                                <!-- Siège social : ITIC SOLUTION -3 ,immeuble Karoum, Av Alkhansaa, Cité Azmani-83350 OULED TEIMA, Maroc<br>
                                                 Téléphone : 085785435457890 -https://itic-solution.com/ -Contact@itic-solution.com <br>
-                                                I.F. :4737443330 - ICE: 002656767875765788978
+                                                I.F. :4737443330 - ICE: 002656767875765788978 -->
+                                                Siège social : {{$company->nom}} -3 ,{{$company->adresse}}-{{$company->code_postal}} {{$company->ville}}, {{$company->pays}}<br>
+                                                Téléphone : {{$company->tel}} - {{$company->site}} - {{$company->email}} <br>
+                                                I.F. :{{$company->iff}} - @if($company->ice || $company->ic != null)ICE: {{$company->ice}}@endif
                                             </td>
                                         </tr>
                                     </tfoot>

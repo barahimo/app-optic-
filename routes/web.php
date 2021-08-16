@@ -118,3 +118,7 @@ Route::get('/showReglement/{id}','ReglementController@show2')->name('reglement.s
 Route::get('/printReglement','ReglementController@createPDF')->name('reglement.createPDF');
 Route::get('pdf/preview','ReglementController@preview')->name('pdf.preview');
 Route::get('pdf/generate/{id}','ReglementController@generatePDF')->name('pdf.generate');
+
+
+Route::resource('company', 'CompanyController');
+Route::get('/hello','CompanyController@hello')->name('company.hello');

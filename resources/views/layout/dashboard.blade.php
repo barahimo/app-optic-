@@ -272,8 +272,7 @@
         <nav style="background-color:rgb(223, 243, 213);"  class="navbar navbar-expand-md navbar-light shadow-sm">
             <div class="container" >
                 <a class="navbar-brand" href="{{ url('/') }}">
-                   <span><i class="fas fa-glasses-alt"> <h3 >SOLUTION OPTICIEN</h3> </i></span> 
-                    
+                   <span><i class="fas fa-glasses-alt"> <h3 >SOLUTION OPTICIEN</h3> </i></span>  
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -298,11 +297,13 @@
                                 </li>
                             @endif
                         @else
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('company.index') }}">Paramètres</a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
-
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();

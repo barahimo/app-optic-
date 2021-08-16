@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Facture;
 use App\Commande;
+use App\Company;
 use App\Lignecommande;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -169,6 +170,7 @@ class FactureController extends Controller
     }
 
     public function show2(Request $request, Facture $facture){
+        $company = Company::first();
         $facture = $facture;
         $commande = Commande::with('client')->where('id', "=", $facture->commande_id)->first();
         $lignecommandes =  Lignecommande::with('produit')->where('commande_id', '=', $commande->id)->get();
@@ -191,7 +193,8 @@ class FactureController extends Controller
              'prix_HT' => $prix_HT,
              'TVA' => $TVA,
              'commande' => $commande,
-             'facture' => $facture
+             'facture' => $facture,
+             'company' => $company
         ]);
     }
 
