@@ -122,3 +122,12 @@ Route::get('pdf/generate/{id}','ReglementController@generatePDF')->name('pdf.gen
 
 Route::resource('company', 'CompanyController');
 Route::get('/hello','CompanyController@hello')->name('company.hello');
+Route::post('/saveImage','CompanyController@saveImage')->name('company.saveImage');
+
+
+
+Route::get('/index5', 'CommandeController@index5')->name('commande.index5');
+Route::get('/getCommandes5', 'CommandeController@getCommandes5')->name('commande.getCommandes5');
+
+
+

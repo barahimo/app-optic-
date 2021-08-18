@@ -170,7 +170,9 @@ class FactureController extends Controller
     }
 
     public function show2(Request $request, Facture $facture){
-        $company = Company::first();
+        $companies = Company::get();
+        $count = count($companies);
+        ($count>0)  ? $company = Company::first(): $company = null;
         $facture = $facture;
         $commande = Commande::with('client')->where('id', "=", $facture->commande_id)->first();
         $lignecommandes =  Lignecommande::with('produit')->where('commande_id', '=', $commande->id)->get();
@@ -194,7 +196,8 @@ class FactureController extends Controller
              'TVA' => $TVA,
              'commande' => $commande,
              'facture' => $facture,
-             'company' => $company
+             'company' => $company,
+             'count' => $count
         ]);
     }
 

@@ -260,7 +260,13 @@
                         <span> Règlements</span>
                      </a>
                 </li>
-
+                <!-- -------------------- -->
+                <li>   
+                    <a href="{{ route('commande.index5')}}">
+                        <span ><i class="fab fa-shopify"></i></span>
+                        <span>Commandes & Règlements</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

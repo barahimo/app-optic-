@@ -538,6 +538,21 @@ class CommandeController extends Controller
         ]);
     }
 
+    public function index5(Request $request){
+        // $commandes = Commande::with('reglements')->where('facture','nf')->where('reste','>',0)->where('client_id',3)->get();
+        // return $commandes;
+        $commandes = Commande::with('reglements')->get();
+        $lignecommandes = Lignecommande::get();
+        $reglements = reglement::get();
+        $clients = Client::get();
+        return view('managements.commandes.index5', [
+            'commandes'=>$commandes,
+            'lignecommandes'=>$lignecommandes,
+            'reglements'=>$reglements,
+            'clients' =>$clients,
+        ]);
+    }
+
     //get commandes pour la page commande
     public function getCommandes(Request $request){
         $search = $request->search;
@@ -613,6 +628,74 @@ class CommandeController extends Controller
                 $commandes = $nr->get();
             else if((!$facture && $status=='all') || ($facture=='all' && !$status) || ($facture=='all' && $status=='all')) //echo 'all';
                 $commandes = Commande::get();
+            else if(($facture=='f' && !$status) || ($facture=='f' && $status=='all')) //echo 'f';
+                $commandes = $f->get();
+            else if($facture=='f' && $status=='r') //echo 'fr';
+                $commandes = $fr->get();
+            else if($facture=='f' && $status=='nr') //echo 'fnr';
+                $commandes = $fnr->get();
+            else if(($facture=='nf' && !$status) || ($facture=='nf' && $status=='all')) //echo 'nf';
+                $commandes = $nf->get();
+            else if($facture==' nf' && $status=='r') //echo 'nfr';
+                $commandes = $nfr->get();
+            else if($facture=='nf' && $status=='nr') //echo 'nfnr';
+                $commandes = $nfnr->get();
+            else //echo '[]';
+                $commandes = [];
+        }
+        // ------------------------------------
+        return response()->json($commandes);
+    }
+
+    //get commandes v2 pour la page commande
+    public function getCommandes5(Request $request){
+        // ------------------------------------
+        $facture = $request->facture;//f - nf - all - null
+        $status = $request->status;//r - nr - all - null
+        $client = $request->client;
+        // ------------------------------------
+        // ------------------------------------
+        $r = Commande::with('reglements')->where('reste','<=',0);
+        $nr = Commande::with('reglements')->where('reste','>',0);
+        $f = Commande::with('reglements')->where('facture','f');
+        $nf = Commande::with('reglements')->where('facture','nf');
+        $fr = Commande::with('reglements')->where('facture','f')->where('reste','<=',0);
+        $fnr = Commande::with('reglements')->where('facture','f')->where('reste','>',0);
+        $nfr = Commande::with('reglements')->where('facture','nf')->where('reste','<=',0);
+        $nfnr = Commande::with('reglements')->where('facture','nf')->where('reste','>',0);
+        if($client){
+            if(!$facture && !$status)  //echo '[]';
+                $commandes = [];
+            else if((!$facture && $status=='r') || ($facture=='all' && $status=='r'))  //echo 'r';
+                $commandes = $r->where('client_id',$client)->get();
+            else if((!$facture && $status=='nr') || ($facture=='all' && $status=='nr'))  //echo 'nr';
+                $commandes = $nr->where('client_id',$client)->get();
+            else if((!$facture && $status=='all') || ($facture=='all' && !$status) || ($facture=='all' && $status=='all')) //echo 'all';
+                $commandes = Commande::with('reglements')->where('client_id',$client)->get();
+            else if(($facture=='f' && !$status) || ($facture=='f' && $status=='all')) //echo 'f';
+                $commandes = $f->where('client_id',$client)->get();
+            else if($facture=='f' && $status=='r') //echo 'fr';
+                $commandes = $fr->where('client_id',$client)->get();
+            else if($facture=='f' && $status=='nr') //echo 'fnr';
+                $commandes = $fnr->where('client_id',$client)->get();
+            else if(($facture=='nf' && !$status) || ($facture=='nf' && $status=='all')) //echo 'nf';
+                $commandes = $nf->where('client_id',$client)->get();
+            else if($facture==' nf' && $status=='r') //echo 'nfr';
+                $commandes = $nfr->where('client_id',$client)->get();
+            else if($facture=='nf' && $status=='nr') //echo 'nfnr';
+                $commandes = $nfnr->where('client_id',$client)->get();
+            else //echo '[]';
+                $commandes = [];
+        }
+        else{
+            if(!$facture && !$status)  //echo '[]';
+                $commandes = [];
+            else if((!$facture && $status=='r') || ($facture=='all' && $status=='r'))  //echo 'r';
+                $commandes = $r->get();
+            else if((!$facture && $status=='nr') || ($facture=='all' && $status=='nr'))  //echo 'nr';
+                $commandes = $nr->get();
+            else if((!$facture && $status=='all') || ($facture=='all' && !$status) || ($facture=='all' && $status=='all')) //echo 'all';
+                $commandes = Commande::with('reglements')->get();
             else if(($facture=='f' && !$status) || ($facture=='f' && $status=='all')) //echo 'f';
                 $commandes = $f->get();
             else if($facture=='f' && $status=='r') //echo 'fr';

@@ -55,7 +55,7 @@
             <div class="col-10">
                 <div id="content">
                     <div class="align-center" style="display: flex;align-items: center;justify-content: center;">
-                        <div class="card" style="background-color: rgba(255, 249, 249, 0.842); width:100%; margin-top:20px">
+                        <div class="card" style="background-color: rgba(255, 249, 249, 0.842); width:100%; margin-top:20px;border : 0px solid black">
                             <div class="card-body">
                                 <table class="table table-hover" border="0" style="border: 0px solid red">
                                     <thead>
@@ -63,13 +63,20 @@
                                             <td colspan="3" class="text-left">
                                                 <!-- <img src="{{asset('images/logo.jpg')}}" alt="Logo" style="width:120px"> -->
                                                 <!-- <img src="{{asset('images/logo.jpg')}}" alt="Logo"> -->
-                                                <img src="{{asset('images/logo.jpg')}}" alt="Logo" style="width:80px" class="border rounded-circle">
+                                                <!-- <img src="{{asset('images/logo.jpg')}}" alt="Logo" style="width:80px" class="border rounded-circle"> -->
+                                                <!-- <img src="{{Storage::url($company->logo ?? null)}}"  alt="logo" style="width:80px;height:80px" class="img-fluid border rounded-circle"> -->
+                                                @if($count>0 && ($company->logo || $company->logo != null))
+                                                    <img src="{{Storage::url($company->logo ?? null)}}"  alt="logo" style="width:80px;height:80px" class="img-fluid">
+                                                @else
+                                                    <img src="{{asset('images/image.png')}}" alt="Logo" style="width:120px">
+                                                @endif
                                             </td>
                                             <td colspan="4" class="text-left">
                                                 Code client: {{$commande->client->code}} <br>  
                                                 Nom Client : {{$commande->client->nom_client}} <br>
                                                 Télèphone : {{$commande->client->telephone}} <br>  
                                                 Adresse : {{$commande->client->adresse}} <br>  
+                                                <!-- Adresse : hamza -3 ,Commune Rurale EDDIR-83350 Oulad Teima, Maroc <br>   -->
                                                 @php
                                                     $time = strtotime($facture->date);
                                                     $date = date('d/m/Y',$time);
@@ -151,9 +158,14 @@
                                                 <!-- Siège social : ITIC SOLUTION -3 ,immeuble Karoum, Av Alkhansaa, Cité Azmani-83350 OULED TEIMA, Maroc<br>
                                                 Téléphone : 085785435457890 -https://itic-solution.com/ -Contact@itic-solution.com <br>
                                                 I.F. :4737443330 - ICE: 002656767875765788978 -->
-                                                Siège social : {{$company->nom}} -3 ,{{$company->adresse}}-{{$company->code_postal}} {{$company->ville}}, {{$company->pays}}<br>
-                                                Téléphone : {{$company->tel}} - {{$company->site}} - {{$company->email}} <br>
-                                                I.F. :{{$company->iff}} - @if($company->ice || $company->ic != null)ICE: {{$company->ice}}@endif
+                                                <!-- Siège social : company->nom -3 ,company->adresse-company->code_postal company->ville, company->pays<br>
+                                                Téléphone : company->tel - company->site - company->email <br>
+                                                I.F. :company->iff - (company->ice || company->ic != null)ICE: company->ice -->
+                                                @if($count>0 && ($company->nom || $company->nom != null))
+                                                    Siège social : {{$company->nom}}
+                                                @else
+                                                    Siège social : nom_societé
+                                                @endif
                                             </td>
                                         </tr>
                                     </tfoot>

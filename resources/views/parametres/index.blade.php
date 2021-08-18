@@ -8,7 +8,13 @@
         else
             $route = route('company.create');
     @endphp
-    <a href="{{$route}}" class="btn btn-info">Configuration</a>
+    <!-- <a href="{{$route}}" class="btn btn-info">Configuration</a> -->
+    <br>
+    <a href="{{route('company.edit',['company'=>$company->id])}}" class="btn btn-info">Edit</a>
+    <br>
+    <a href="{{route('company.create')}}" class="btn btn-info">Create</a>
+    <br>
+    <a href="{{route('company.form')}}" class="btn btn-info">FORM</a>
     <br>
     <h1>this is view company</h1>
     <button id="test">TEST</button>
