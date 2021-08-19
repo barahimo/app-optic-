@@ -167,6 +167,10 @@
             </div>
             <div class="col-2" style="text-align : right">
                 <div class="text-center">
+                    <i class="fas fa-arrow-circle-left fa-3x" onclick="window.location.assign('/facture')"></i>
+                </div>
+                <br>
+                <div class="text-center">
                     <button onclick="onprint()" class="btn btn-primary">Créer PDF</button>
                 </div>
             </div>

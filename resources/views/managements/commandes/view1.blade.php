@@ -55,13 +55,18 @@
             <div class="col-10">
                 <div id="content">
                     <div class="align-center" style="display: flex;align-items: center;justify-content: center;">
-                        <div class="card" style="background-color: rgba(255, 249, 249, 0.842); width:100%; margin-top:20px">
+                        <div class="card" style="background-color: rgba(255, 249, 249, 0.842); width:100%; margin-top:20px;border : 0px solid black">
                             <div class="card-body">
                                 <table class="table table-hover" border="0" style="border: 0px solid red">
                                     <thead>
                                         <tr>
                                             <td colspan="2" class="text-left">
-                                                <img src="{{asset('images/logo.jpg')}}" alt="Logo" style="width:80px" class="border rounded-circle">
+                                                <!-- <img src="{{asset('images/logo.jpg')}}" alt="Logo" style="width:80px" class="border rounded-circle"> -->
+                                                @if($company && ($company->logo || $company->logo != null))
+                                                    <img src="{{Storage::url($company->logo ?? null)}}"  alt="logo" style="width:80px;height:80px" class="img-fluid">
+                                                @else
+                                                    <img src="{{asset('images/image.png')}}" alt="Logo" style="width:120px">
+                                                @endif
                                             </td>
                                             <td colspan="3" class="text-left">
                                                 Code client: {{$commande->client->code}} <br>  
@@ -123,9 +128,10 @@
                                         <tr style="height:30px"></tr>
                                         <tr style="height: 10px">
                                             <td colspan="5" class="text-center" style="text-align:center; background-color:rgb(235, 233, 233)">
-                                                Siège social : ITIC SOLUTION -3 ,immeuble Karoum, Av Alkhansaa, Cité Azmani-83350 OULED TEIMA, Maroc<br>
+                                                <!-- Siège social : ITIC SOLUTION -3 ,immeuble Karoum, Av Alkhansaa, Cité Azmani-83350 OULED TEIMA, Maroc<br>
                                                 Téléphone : 085785435457890 -https://itic-solution.com/ -Contact@itic-solution.com <br>
-                                                I.F. :4737443330 - ICE: 002656767875765788978
+                                                I.F. :4737443330 - ICE: 002656767875765788978 -->
+                                                {!!$adresse!!}
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -136,6 +142,10 @@
                 </div>
             </div>
             <div class="col-2" style="text-align : right">
+                <div class="text-center">
+                    <i class="fas fa-arrow-circle-left fa-3x" onclick="window.location.assign('/index5')"></i>
+                </div>
+                <br>
                 <div class="text-center">
                     <button onclick="onprint()" class="btn btn-primary">Créer PDF</button>
                 </div>

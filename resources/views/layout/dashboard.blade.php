@@ -214,12 +214,12 @@
                 </li> -->
                 <!-- Commande2 -->
                 <!-- La liste des Commandes -->
-                <li>   
+                <!-- <li>   
                     <a href="{{ route('commande.index222')}}">
                         <span ><i class="fab fa-shopify"></i></span>
                         <span>Commandes</span>
                     </a>
-                </li>
+                </li> -->
                 <!-- La liste des Commandes -->
                 <li>   
                     <a href="{{ route('produit.index')}}">
@@ -234,7 +234,14 @@
                         <span>Catégories</span>
                      </a>
                 </li>
-               
+               <!-- -------------------- -->
+               <li>   
+                    <a href="{{ route('commande.index5')}}">
+                        <span ><i class="fab fa-shopify"></i></span>
+                        <span>Commandes | Règ.</span>
+                    </a>
+                </li>
+                <!-- -------------------- -->
                 <li>   
                     <a href="{{ route('facture.index')}}"">
                         <span ><i class="fas fa-money-check-alt"></i></span>
@@ -254,19 +261,13 @@
                         <span> Règlements</span>
                      </a>
                 </li> -->
-                <li>   
+                <!-- <li>   
                     <a href="{{ route('reglement.index22')}}">
                         <span ><i class="fab fa-cc-amazon-pay"></i></span>
                         <span> Règlements</span>
                      </a>
-                </li>
-                <!-- -------------------- -->
-                <li>   
-                    <a href="{{ route('commande.index5')}}">
-                        <span ><i class="fab fa-shopify"></i></span>
-                        <span>Commandes & Règlements</span>
-                    </a>
-                </li>
+                </li> -->
+                
             </ul>
         </div>
     </div>

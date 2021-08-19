@@ -456,7 +456,8 @@
           Swal.fire(data.message);
           if(data.status == "success"){
             setTimeout(() => {
-              window.location.assign("/gestioncommande")
+              // window.location.assign("/gestioncommande")
+              window.location.assign("/index5")
             }, 2000);
           }
         } ,

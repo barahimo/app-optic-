@@ -202,7 +202,8 @@
           Swal.fire(data.message);
           if(data.status == "success"){
             setTimeout(() => {
-              window.location.assign("/reglements2")
+              // window.location.assign("/reglements2")
+              window.location.assign("/index5")
             }, 2000);
           }
         } ,

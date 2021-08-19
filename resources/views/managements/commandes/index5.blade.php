@@ -6,6 +6,10 @@
     <a href="{{route('commande.index2')}}" class="btn btn-primary m-b-10 ">
       <i class="fa fa-plus">&nbsp;Commande</i>
     </a>
+    &nbsp;
+    <a id="create" href="{{route('reglement.create2')}}" class="btn btn-primary m-b-10 ">
+      <i class="fa fa-plus">&nbsp;Règlement</i>
+    </a>
   </div>
   <br>
   <div class="row">
@@ -146,6 +150,7 @@
               var btnPrint = `<a class="btn btn-outline-info" href=${url_show}>Print</a>`;
               if(reglement.avance != 0) 
                 details+=`<tr  style="${style}">
+                      <td>REG-${reglement.code}</td>
                       <td style="display : none">${reglement.id}</td>
                       <td style="display : none">${reglement.commande_id}</td>
                       <td style="display : none">${reglement.nom_client}</td>
@@ -169,11 +174,11 @@
               <td style="display : none">${status}</td>
               <td style="display : none">${facture}</td>
               <td>
-                <button class="btn btn-link" onclick="window.location.assign('${url_fac}')"><i class="fa fa-plus">&nbsp;F</i></button>
-                <button class="btn btn-link" onclick="window.location.assign('${url_reg}')"><i class="fa fa-plus">&nbsp;R</i></button>
-                <a class="btn btn-link" href=${url_edit}>E</a>
-                <a class="btn btn-link" href=${url_show}>S</a>
-                <i class="fas fa-eye"
+                <button class="btn btn-link" onclick="window.location.assign('${url_fac}')"><i class="fa fa-plus">&nbsp;<i class="fas fa-receipt"></i></i></button>
+                <button class="btn btn-link" onclick="window.location.assign('${url_reg}')"><i class="fa fa-plus">&nbsp;<i class="fas fa-hand-holding-usd"></i></i></button>
+                <a class="btn btn-link" href=${url_edit}><i class="fas fa-edit"></i></a>
+                <a class="btn btn-link" href=${url_show}><i class="fas fa-eye"></i></a>
+                <i class="fas fa-plus"
                   id="btnDetails${index}"
                   data-index="${index}" 
                   data-status="false" 
@@ -186,6 +191,7 @@
                 <table class="table">
                   <thead  class="thead-light">
                     <tr>
+                      <th>#</th>
                       <th style="display : none">id</th>
                       <th style="display : none">Commande_id</th>
                       <th style="display : none">Nom_client</th>
@@ -220,8 +226,17 @@
     var status = null;
     var client = null;
     // -----------------------------------
-    if($('#client').val() != "")
+    if($('#client').val() != ""){
       client = $('#client').val(); 
+      clientHTML = $('#client').html(); 
+      var create  = $('#create');
+      var text = $("#client option:selected" ).text();
+      var msg = `<i class="fa fa-plus">&nbsp;Règlement</i> - ${text}`;
+      create.html(msg);
+      var url = "{{route('reglement.create2',['client'=>"val"])}}";
+      url = url.replace('val', client);
+      create.attr('href',url);
+    }
     // -----------------------------------
     if(r.prop("checked") && nr.prop("checked"))
       status = 'all';
@@ -261,12 +276,14 @@
     if(status == 'true'){
       e.target.setAttribute('data-status','false');
       $('#'+item).parent().parent().parent().find('#viewDetails'+index).prop('style','display: none;');
-      $('#'+item).prop('class','fas fa-eye');
+      // $('#'+item).prop('class','fas fa-eye');
+      $('#'+item).prop('class','fas fa-plus');
     }
     else{
       e.target.setAttribute('data-status','true');
       $('#'+item).parent().parent().parent().find('#viewDetails'+index).prop('style','display: contents;');
-      $('#'+item).prop('class','fas fa-eye-slash');
+      // $('#'+item).prop('class','fas fa-eye-slash');
+      $('#'+item).prop('class','fas fa-minus');
     }
   }
   function avoir(obj){
